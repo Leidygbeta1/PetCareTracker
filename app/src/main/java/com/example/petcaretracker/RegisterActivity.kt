@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 
 class RegisterActivity : AppCompatActivity() {
@@ -104,6 +105,7 @@ class RegisterActivity : AppCompatActivity() {
         })
 
         // Acción al presionar el botón de registro
+        // Acción al presionar el botón de registro
         btnRegistrar.setOnClickListener {
             val nombre = etNombre.text.toString()
             val usuario = etUsuario.text.toString()
@@ -132,9 +134,14 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Mostrar los datos registrados (simulación)
-            val mensaje = "Registro exitoso de $nombre con $numMascotas mascotas.\n" + datosMascotas.joinToString("\n")
-            Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show()
+            // Mostrar mensaje de éxito
+            Toast.makeText(this, "Registro exitoso. Bienvenido, $nombre!", Toast.LENGTH_LONG).show()
+
+            // 🔹 Navegar a la pantalla HomeActivity
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+            finish() // Cierra RegisterActivity para evitar que el usuario vuelva atrás
         }
+
     }
 }

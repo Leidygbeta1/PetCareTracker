@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">PetCareTracker</string>
+
+        <string name="app_name">PetCareTracker</string>
+        <string name="open_drawer">Abrir menú</string>
+        <string name="close_drawer">Cerrar menú</string>
+
 </resources>

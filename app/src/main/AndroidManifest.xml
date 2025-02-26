@@ -24,6 +24,10 @@
 
         <activity android:name=".LoginActivity"/>
         <activity android:name=".RegisterActivity"/>
+        <activity android:name=".HomeActivity"/>
+        <activity android:name=".FuncionesAdapter"/>
+        <activity android:name=".MedicoActivity"/>
+        <activity android:name=".RegistroMedicoActivity"/>
 
     </application>
 

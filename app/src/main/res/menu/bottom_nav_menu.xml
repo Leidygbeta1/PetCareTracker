@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/casa"
+        android:title="Inicio"/>
+    <item
+        android:id="@+id/nav_medico"
+        android:icon="@drawable/medico"
+        android:title="Médico"/>
+    <item
+        android:id="@+id/nav_ubicacion"
+        android:icon="@drawable/local"
+        android:title="Ubicación"/>
+    <item
+        android:id="@+id/nav_mascota"
+        android:icon="@drawable/huella2"
+        android:title="Mascotas"/>
+</menu>
