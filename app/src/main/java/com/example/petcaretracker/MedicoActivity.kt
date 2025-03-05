@@ -97,7 +97,7 @@ class MedicoActivity : AppCompatActivity() {
     }
 
     private fun getFuncionesMedicas(): List<String> {
-        return listOf("Historial Médico", "Recordatorio Vacunas", "Registro Médico")
+        return listOf("Historial Médico", "Recordatorio Vacunas", "Registro Médico", "Carnet de Vacunacion")
     }
 }
 

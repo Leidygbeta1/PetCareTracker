@@ -25,6 +25,18 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:navigationIcon="@drawable/ic_menu"/> <!-- 🔹 Ícono del menú -->
 
+
+        <TextView
+            android:id="@+id/textoHome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trackeo de Recorridos, Alimentación Proporcional a la mascota, Mejores Estéticas y Veterinarias Certificadas, Compartir ubicación"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:padding="10dp"
+            android:textAlignment="center"
+            android:background="@android:color/white"/>
+
         <!-- Contenido Principal con las Tarjetas -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

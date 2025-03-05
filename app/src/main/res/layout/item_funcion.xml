@@ -11,7 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="15dp">
+        android:padding="15dp"
+        android:gravity="center">
+
+        <!-- Imagen para la funcionalidad con ajuste de tamaño -->
+        <ImageView
+            android:id="@+id/imagenFuncion"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_marginBottom="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_launcher_foreground" />
 
         <TextView
             android:id="@+id/textFuncion"
@@ -19,6 +29,9 @@
             android:layout_height="wrap_content"
             android:text="Funcionalidad"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:gravity="center" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
+
+
