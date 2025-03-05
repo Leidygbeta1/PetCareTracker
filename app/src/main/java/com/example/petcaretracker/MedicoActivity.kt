@@ -1,11 +1,15 @@
 package com.example.petcaretracker
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +36,28 @@ class MedicoActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        // 🔹 Obtener userId desde SharedPreferences
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getString("userId", null)
+
+        if (userId != null) {
+            // 🔹 Consultar datos del usuario desde Firebase
+            FirebaseService.obtenerUsuarioActual(userId) { usuarioData, mascotas ->
+                if (usuarioData != null) {
+                    val headerView = navigationView.getHeaderView(0)
+                    val nombreTextView = headerView.findViewById<TextView>(R.id.tvNombreUsuario)
+                    val correoTextView = headerView.findViewById<TextView>(R.id.tvCorreoUsuario)
+
+                    nombreTextView.text = usuarioData["nombre_completo"].toString()
+                    correoTextView.text = usuarioData["correo_electronico"].toString()
+                } else {
+                    Toast.makeText(this, "Error al cargar datos", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(this, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
+        }
+
         // Configurar el RecyclerView con 2 columnas
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.adapter = FuncionesAdapter(getFuncionesMedicas())
@@ -43,6 +69,10 @@ class MedicoActivity : AppCompatActivity() {
                 R.id.nav_settings -> Toast.makeText(this, "Configuración", Toast.LENGTH_SHORT).show()
                 R.id.nav_logout -> {
                     Toast.makeText(this, "Cerrando sesión...", Toast.LENGTH_SHORT).show()
+                    with(sharedPreferences.edit()) {
+                        remove("userId")
+                        apply()
+                    }
                     startActivity(Intent(this, LoginActivity::class.java))
                     finish()
                 }

@@ -1,5 +1,5 @@
 package com.example.petcaretracker
-
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -105,43 +105,56 @@ class RegisterActivity : AppCompatActivity() {
         })
 
         // Acción al presionar el botón de registro
-        // Acción al presionar el botón de registro
         btnRegistrar.setOnClickListener {
             val nombre = etNombre.text.toString()
             val usuario = etUsuario.text.toString()
             val contrasena = etContrasena.text.toString()
             val correo = etCorreo.text.toString()
             val numMascotas = etNumMascotas.text.toString().toIntOrNull() ?: 0
-            val datosMascotas = mutableListOf<String>()
 
-            // Recoger los datos de cada mascota
-            var index = 0
-            for (i in 0 until contenedorMascotas.childCount) {
-                val view = contenedorMascotas.getChildAt(i)
-
-                if (view is EditText) {
-                    val nombreMascota = view.text.toString()
-                    val tipoMascota = (contenedorMascotas.getChildAt(i + 1) as Spinner).selectedItem.toString()
-                    val razaMascota = (contenedorMascotas.getChildAt(i + 2) as Spinner).selectedItem.toString()
-                    datosMascotas.add("Mascota ${index + 1}: Nombre: $nombreMascota, Tipo: $tipoMascota, Raza: $razaMascota")
-                    index++
-                }
-            }
-
-            // Validar que los campos no estén vacíos
             if (nombre.isEmpty() || usuario.isEmpty() || contrasena.isEmpty() || correo.isEmpty()) {
                 Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Mostrar mensaje de éxito
-            Toast.makeText(this, "Registro exitoso. Bienvenido, $nombre!", Toast.LENGTH_LONG).show()
+            // Recoger datos de las mascotas
+            val datosMascotas = mutableListOf<Map<String, String>>()
+            for (i in 0 until contenedorMascotas.childCount step 4) {
+                val nombreMascota = (contenedorMascotas.getChildAt(i + 1) as EditText).text.toString()
+                val tipoMascota = (contenedorMascotas.getChildAt(i + 2) as Spinner).selectedItem.toString()
+                val razaMascota = (contenedorMascotas.getChildAt(i + 3) as Spinner).selectedItem.toString()
 
-            // 🔹 Navegar a la pantalla HomeActivity
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
-            finish() // Cierra RegisterActivity para evitar que el usuario vuelva atrás
+                if (nombreMascota.isNotEmpty()) {
+                    val mascotaData = mapOf(
+                        "nombre_mascota" to nombreMascota,
+                        "tipo" to tipoMascota,
+                        "raza" to razaMascota
+                    )
+                    datosMascotas.add(mascotaData)
+                }
+            }
+
+            // Guardar usuario y mascotas en Firebase
+            FirebaseService.registrarUsuario(nombre, usuario, contrasena, correo, numMascotas, datosMascotas) { success, userId  ->
+                if (success && userId != null) {
+                    // 🔄 Guardar el userId en SharedPreferences
+                    val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putString("userId", userId)
+                        apply()
+                    }
+
+                    Toast.makeText(this, "Registro exitoso. Bienvenido, $nombre!", Toast.LENGTH_LONG).show()
+                    val intent = Intent(this, HomeActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this, "Error al registrar. Intenta de nuevo.", Toast.LENGTH_LONG).show()
+                }
+            }
         }
 
     }
+
 }
+

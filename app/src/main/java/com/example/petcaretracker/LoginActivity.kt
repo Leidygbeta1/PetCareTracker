@@ -16,7 +16,8 @@ class LoginActivity : AppCompatActivity() {
         val btnRegister: Button = findViewById(R.id.btnRegister)
 
         btnLogin.setOnClickListener {
-            Toast.makeText(this, "Función de Login Pendiente", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoginActivity2::class.java)
+            startActivity(intent)
         }
 
         btnRegister.setOnClickListener {

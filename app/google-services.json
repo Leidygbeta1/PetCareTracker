@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1054282022973",
+    "project_id": "petcaretracker-2e427",
+    "storage_bucket": "petcaretracker-2e427.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054282022973:android:006eeec92c36d880902a54",
+        "android_client_info": {
+          "package_name": "com.example.petcaretracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClCbvvcjuo8c3FWdmnfy0okeoelZPEU7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

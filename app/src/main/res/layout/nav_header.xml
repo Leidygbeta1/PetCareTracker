@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="#1976D2"
     android:padding="20dp">
-
 
     <!-- Imagen de Usuario -->
     <ImageView
@@ -17,9 +17,9 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/rounded_image"/>
 
-    <!-- Nombre de Usuario -->
+    <!-- Nombre de Usuario (Cambiado a tvNombreUsuario) -->
     <TextView
-        android:id="@+id/userName"
+        android:id="@+id/tvNombreUsuario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Nombre de Usuario"
@@ -29,9 +29,9 @@
         android:gravity="center"
         android:layout_marginTop="10dp"/>
 
-    <!-- Correo de Usuario -->
+    <!-- Correo de Usuario (Cambiado a tvCorreoUsuario) -->
     <TextView
-        android:id="@+id/userEmail"
+        android:id="@+id/tvCorreoUsuario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="correo@example.com"
