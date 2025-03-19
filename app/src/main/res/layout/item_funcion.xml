@@ -4,14 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
+    android:background="#FFFFFF"
     app:cardCornerRadius="10dp"
     app:cardElevation="5dp">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="15dp"
+        android:background="#FFFFFF"
         android:gravity="center">
 
         <!-- Imagen para la funcionalidad con ajuste de tamaño -->
@@ -24,13 +27,14 @@
             android:src="@drawable/ic_launcher_foreground" />
 
         <TextView
-            android:id="@+id/textFuncion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Funcionalidad"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+        android:id="@+id/textFuncion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Funcionalidad"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:gravity="center" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
 

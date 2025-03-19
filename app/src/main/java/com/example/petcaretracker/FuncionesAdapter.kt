@@ -41,6 +41,7 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
             val intent = when (funcion) {
                 "Historial Médico" -> Intent(contexto, HistorialMedicoActivity::class.java)
                 "Registro Médico" -> Intent(contexto, RegistroMedicoActivity::class.java)
+                "Recordatorio Vacunas" -> Intent(contexto, RecordatorioVacunasActivity::class.java) // Nuevo caso
                 else -> null
             }
             intent?.let { contexto.startActivity(it) }

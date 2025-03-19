@@ -44,6 +44,9 @@
         <activity android:name=".RegistroMedicoActivity"/>
         <activity android:name=".LoginActivity2"/>
         <activity android:name=".HistorialMedicoActivity"/>
+        <activity android:name=".AgregarRecordatorioActivity"/>
+        <activity android:name=".RecordatorioVacunasActivity"/>
+        <activity android:name=".VerCalendarioActivity"/>
 
     </application>
 

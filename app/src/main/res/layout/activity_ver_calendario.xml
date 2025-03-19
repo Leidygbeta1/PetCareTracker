@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="#FFFFFF">
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver Recordatorios"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:textColor="#333"/>
+
+    <!-- CalendarView para mostrar el calendario -->
+    <android.widget.CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:dateTextAppearance="@style/CalendarDateTextStyle" />
+
+    <!-- ListView para mostrar los recordatorios -->
+    <ListView
+        android:id="@+id/listViewRecordatorios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"/>
+
+</LinearLayout>

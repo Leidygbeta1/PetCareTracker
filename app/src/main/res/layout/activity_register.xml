@@ -39,6 +39,8 @@
             android:hint="Nombre Completo"
             android:inputType="textPersonName"
             android:padding="10dp"
+            android:textColor= "#000000"
+            android:textColorHint="#888888"
             app:layout_constraintTop_toBottomOf="@id/textTitulo"
             tools:layout_editor_absoluteX="16dp" />
 
@@ -48,6 +50,8 @@
             android:layout_height="wrap_content"
             android:hint="Nombre de Usuario"
             android:inputType="textPersonName"
+            android:textColor= "#000000"
+            android:textColorHint="#888888"
             app:layout_constraintTop_toBottomOf="@id/etNombre"
             android:padding="10dp"
             android:background="@android:drawable/edit_text"/>
@@ -59,6 +63,8 @@
             android:layout_height="wrap_content"
             android:hint="Contraseña"
             android:inputType="textPassword"
+            android:textColor= "#000000"
+            android:textColorHint="#888888"
             app:layout_constraintTop_toBottomOf="@id/etUsuario"
             android:padding="10dp"
             android:background="@android:drawable/edit_text"/>
@@ -72,6 +78,8 @@
             android:inputType="textEmailAddress"
             app:layout_constraintTop_toBottomOf="@id/etContrasena"
             android:padding="10dp"
+            android:textColor= "#000000"
+            android:textColorHint="#888888"
             android:background="@android:drawable/edit_text"/>
 
         <!-- Campo Número de Mascotas -->
@@ -83,6 +91,8 @@
             android:inputType="number"
             app:layout_constraintTop_toBottomOf="@id/etCorreo"
             android:padding="10dp"
+            android:textColor= "#000000"
+            android:textColorHint="#888888"
             android:background="@android:drawable/edit_text"/>
 
         <!-- Contenedor de los nombres de mascotas -->

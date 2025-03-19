@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Estilo personalizado para cambiar el color de los números en el CalendarView -->
+    <style name="CalendarDateTextStyle">
+        <item name="android:textColor">#000000</item> <!-- Color negro para los números de las fechas -->
+        <item name="android:textSize">16sp</item> <!-- Tamaño de texto para las fechas -->
+    </style>
+</resources>
