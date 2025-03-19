@@ -47,6 +47,10 @@
         <activity android:name=".AgregarRecordatorioActivity"/>
         <activity android:name=".RecordatorioVacunasActivity"/>
         <activity android:name=".VerCalendarioActivity"/>
+        <activity android:name=".MascotasActivity"/>
+        <activity android:name=".AgregarMascotaActivity"/>
+        <activity android:name=".EditarMascotaActivity"/>
+
 
     </application>
 

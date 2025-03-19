@@ -1,10 +1,12 @@
 package com.example.petcaretracker
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 
 object FirebaseService {
 
@@ -187,6 +189,49 @@ object FirebaseService {
                 callback(null)
             }
     }
+
+    fun agregarMascota(
+        userId: String,
+        nombre: String,
+        raza: String,
+        tipo: String,
+        imageUri: Uri?,
+        callback: (Boolean, String?) -> Unit
+    ) {
+        val mascotaRef = db.collection("usuarios").document(userId).collection("mascotas").document()
+        val mascotaId = mascotaRef.id
+
+        val datosMascota = mutableMapOf(
+            "nombre_mascota" to nombre,
+            "raza" to raza,
+            "tipo" to tipo,
+            "foto" to "" // Inicialmente vacío
+        )
+
+        if (imageUri != null) {
+            val storageRef = FirebaseStorage.getInstance().reference.child("mascotas/$userId/$mascotaId.jpg")
+
+            storageRef.putFile(imageUri)
+                .addOnSuccessListener {
+                    storageRef.downloadUrl.addOnSuccessListener { uri ->
+                        datosMascota["foto"] = uri.toString()
+
+                        mascotaRef.set(datosMascota)
+                            .addOnSuccessListener { callback(true, null) }
+                            .addOnFailureListener { e -> callback(false, e.message) }
+                    }
+                }
+                .addOnFailureListener { e -> callback(false, "Error al subir la foto: ${e.message}") }
+        } else {
+            mascotaRef.set(datosMascota)
+                .addOnSuccessListener { callback(true, null) }
+                .addOnFailureListener { e -> callback(false, e.message) }
+        }
+    }
+
+
+
+
 
 }
 

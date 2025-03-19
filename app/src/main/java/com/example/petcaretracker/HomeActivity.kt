@@ -97,7 +97,12 @@ class HomeActivity : AppCompatActivity() {
                     finish()
                 }
                 R.id.nav_ubicacion -> Toast.makeText(this, "Ubicación", Toast.LENGTH_SHORT).show()
-                R.id.nav_mascota -> Toast.makeText(this, "Mascotas", Toast.LENGTH_SHORT).show()
+                R.id.nav_mascota -> {
+                    val intent = Intent(this, MascotasActivity::class.java)
+                    startActivity(intent)
+                    finish() // Finaliza la actividad actual para evitar que se acumule en el historial
+                }
+
             }
             true
         }

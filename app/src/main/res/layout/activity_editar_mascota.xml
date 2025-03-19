@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".EditarMascotaActivity">
+
+    <!-- Campo Nombre -->
+    <EditText
+        android:id="@+id/editTextNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nombre de la mascota"
+        android:inputType="text" />
+
+    <!-- Campo Raza -->
+    <EditText
+        android:id="@+id/editTextRaza"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Raza"
+        android:inputType="text" />
+
+    <!-- Campo Tipo -->
+    <EditText
+        android:id="@+id/editTextTipo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tipo (Perro, Gato, etc.)"
+        android:inputType="text" />
+
+    <!-- Imagen de la Mascota -->
+    <ImageView
+        android:id="@+id/imageViewMascota"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <!-- Botón para seleccionar foto -->
+    <Button
+        android:id="@+id/btnSeleccionarFoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Seleccionar Foto"
+        android:backgroundTint="#1976D2"/>
+
+    <!-- Botón para guardar cambios -->
+    <Button
+        android:id="@+id/btnGuardar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Guardar Cambios"
+        android:backgroundTint="@color/black"
+        android:textColor="@android:color/white" />
+
+
+</LinearLayout>
