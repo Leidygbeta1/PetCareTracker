@@ -71,11 +71,31 @@ class MascotasActivity : AppCompatActivity() {
             startActivity(Intent(this, AgregarMascotaActivity::class.java))
         }
 
+        if (userId != null) {
+            // 🔹 Consultar datos del usuario desde Firebase
+            FirebaseService.obtenerUsuarioActual(userId) { usuarioData, mascotas ->
+                if (usuarioData != null) {
+                    val headerView = navigationView.getHeaderView(0)
+                    val nombreTextView = headerView.findViewById<TextView>(R.id.tvNombreUsuario)
+                    val correoTextView = headerView.findViewById<TextView>(R.id.tvCorreoUsuario)
+
+                    nombreTextView.text = usuarioData["nombre_completo"].toString()
+                    correoTextView.text = usuarioData["correo_electronico"].toString()
+                } else {
+                    Toast.makeText(this, "Error al cargar datos", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(this, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
+        }
+
         // Configurar navegación lateral
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_perfil -> Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show()
+                R.id.nav_settings -> Toast.makeText(this, "Configuración", Toast.LENGTH_SHORT).show()
                 R.id.nav_logout -> {
+                    Toast.makeText(this, "Cerrando sesión...", Toast.LENGTH_SHORT).show()
                     with(sharedPreferences.edit()) {
                         remove("userId")
                         apply()

@@ -50,6 +50,9 @@
         <activity android:name=".MascotasActivity"/>
         <activity android:name=".AgregarMascotaActivity"/>
         <activity android:name=".EditarMascotaActivity"/>
+        <activity android:name=".CarnetVacunacionActivity"/>
+        <activity android:name=".AgregarVacunaActivity"/>
+        <activity android:name=".AlimentacionActivity"/>
 
 
     </application>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etNombreVacuna"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nombre de la Vacuna"
+        android:inputType="text"/>
+
+    <EditText
+        android:id="@+id/etFechaAplicacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Fecha de Aplicación"
+        android:inputType="none"
+        android:focusable="false"
+        android:clickable="true" />
+
+    <EditText
+        android:id="@+id/etProximaDosis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Fecha Próxima Dosis"
+        android:inputType="none"
+        android:focusable="false"
+        android:clickable="true" />
+
+
+    <EditText
+        android:id="@+id/etVeterinario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Veterinario"
+        android:inputType="text"/>
+
+    <Button
+        android:id="@+id/btnGuardarVacuna"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Guardar Vacuna"
+        android:backgroundTint="#1976D2"/>
+</LinearLayout>

@@ -230,6 +230,41 @@ object FirebaseService {
     }
 
 
+    // 🔄 Obtener Vacunas para una mascota específica
+    fun obtenerVacunas(userId: String, mascotaId: String, callback: (List<Map<String, Any>>?) -> Unit) {
+        db.collection("usuarios").document(userId).collection("mascotas")
+            .document(mascotaId).collection("vacunas")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val vacunas = snapshot.documents.mapNotNull { it.data }
+                callback(vacunas)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseService", "Error al obtener vacunas", e)
+                callback(null)
+            }
+    }
+
+    // 🔄 Agregar una nueva vacuna
+    fun agregarVacuna(userId: String, mascotaId: String, vacuna: Vacuna, callback: (Boolean) -> Unit) {
+        val nuevaVacuna = hashMapOf(
+            "nombre" to vacuna.nombre,
+            "fechaAplicacion" to vacuna.fechaAplicacion,
+            "proximaDosis" to vacuna.proximaDosis,
+            "veterinario" to vacuna.veterinario
+        )
+
+        db.collection("usuarios").document(userId)
+            .collection("mascotas").document(mascotaId)
+            .collection("vacunas").add(nuevaVacuna)
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseService", "Error al agregar vacuna", e)
+                callback(false)
+            }
+    }
 
 
 

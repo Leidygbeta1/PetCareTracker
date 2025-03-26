@@ -42,6 +42,8 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
                 "Historial Médico" -> Intent(contexto, HistorialMedicoActivity::class.java)
                 "Registro Médico" -> Intent(contexto, RegistroMedicoActivity::class.java)
                 "Recordatorio Vacunas" -> Intent(contexto, RecordatorioVacunasActivity::class.java) // Nuevo caso
+                "Carnet de Vacunacion" -> Intent(contexto, CarnetVacunacionActivity::class.java)
+                "Alimentacion Proporcional a la mascota" -> Intent(contexto, AlimentacionActivity::class.java) // Abrir la pantalla de Alimentación
                 else -> null
             }
             intent?.let { contexto.startActivity(it) }

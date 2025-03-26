@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+
+    <!-- Spinner para seleccionar la mascota -->
+
+    <!-- Campo para mostrar el peso de la mascota -->
+    <Spinner
+        android:id="@+id/spinnerMascotas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/etPesoMascota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Peso de la mascota (kg)"
+        android:inputType="numberDecimal"/>
+
+    <EditText
+        android:id="@+id/etEdadMascota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Edad de la mascota (años)"
+        android:inputType="number" />
+
+    <!-- Botón para calcular la cantidad de alimento -->
+    <Button
+        android:id="@+id/btnCalcularAlimento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calcular Alimentación"
+        android:backgroundTint="#1976D2"/>
+
+    <!-- Resultado del cálculo de alimento -->
+    <TextView
+        android:id="@+id/tvCantidadAlimento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cantidad de comida recomendada"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingTop="16dp"/>
+
+</LinearLayout>
