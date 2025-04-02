@@ -92,8 +92,12 @@ class MascotasActivity : AppCompatActivity() {
         // Configurar navegación lateral
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.nav_perfil -> Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show()
-                R.id.nav_settings -> Toast.makeText(this, "Configuración", Toast.LENGTH_SHORT).show()
+                R.id.nav_perfil -> {
+                    startActivity(Intent(this, EditarPerfilActivity::class.java))
+                }
+                R.id.nav_settings -> {
+                    startActivity(Intent(this, ConfiguracionActivity::class.java))
+                }
                 R.id.nav_logout -> {
                     Toast.makeText(this, "Cerrando sesión...", Toast.LENGTH_SHORT).show()
                     with(sharedPreferences.edit()) {
@@ -113,6 +117,10 @@ class MascotasActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home -> startActivity(Intent(this, HomeActivity::class.java))
                 R.id.nav_medico -> startActivity(Intent(this, MedicoActivity::class.java))
+                R.id.nav_ubicacion -> {
+                    startActivity(Intent(this, UbicacionActivity::class.java))
+                    finish()
+                }
                 R.id.nav_mascota -> Toast.makeText(this, "Ya estás en Mascotas", Toast.LENGTH_SHORT).show()
             }
             true

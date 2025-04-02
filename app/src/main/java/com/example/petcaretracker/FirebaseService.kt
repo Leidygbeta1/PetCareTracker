@@ -3,6 +3,8 @@ package com.example.petcaretracker
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -264,6 +266,75 @@ object FirebaseService {
                 Log.e("FirebaseService", "Error al agregar vacuna", e)
                 callback(false)
             }
+    }
+
+    fun actualizarPerfilUsuario(
+        userId: String,
+        nombre: String,
+        nombreUsuario: String,
+        correo: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val data = mapOf(
+            "nombre_completo" to nombre,
+            "nombre_usuario" to nombreUsuario,
+            "correo_electronico" to correo
+        )
+
+        Firebase.firestore.collection("usuarios").document(userId)
+            .update(data)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseService", "Error al actualizar perfil", e)
+                callback(false)
+            }
+    }
+
+
+    fun eliminarCuenta(userId: String, callback: (Boolean) -> Unit) {
+        val db = Firebase.firestore
+        val userRef = db.collection("usuarios").document(userId)
+
+        // 1. Obtener las mascotas
+        userRef.collection("mascotas").get()
+            .addOnSuccessListener { mascotasSnapshot ->
+                val batch = db.batch()
+
+                val tareas = mutableListOf<Task<Void>>()
+
+                for (mascotaDoc in mascotasSnapshot.documents) {
+                    val mascotaRef = mascotaDoc.reference
+
+                    // 1.1 Eliminar registros médicos
+                    tareas.add(mascotaRef.collection("registros_medicos").get().continueWithTask { registros ->
+                        val eliminarRegistros = registros.result?.documents?.map { it.reference.delete() } ?: emptyList()
+                        Tasks.whenAll(eliminarRegistros)
+                    })
+
+                    // 1.2 Eliminar vacunas
+                    tareas.add(mascotaRef.collection("vacunas").get().continueWithTask { vacunas ->
+                        val eliminarVacunas = vacunas.result?.documents?.map { it.reference.delete() } ?: emptyList()
+                        Tasks.whenAll(eliminarVacunas)
+                    })
+
+                    // 1.3 Eliminar mascota
+                    tareas.add(mascotaRef.delete())
+                }
+
+                // 2. Eliminar recordatorios
+                tareas.add(userRef.collection("recordatorios").get().continueWithTask { recordatorios ->
+                    val eliminarRecordatorios = recordatorios.result?.documents?.map { it.reference.delete() } ?: emptyList()
+                    Tasks.whenAll(eliminarRecordatorios)
+                })
+
+                // 3. Cuando todo lo anterior esté listo, eliminar el usuario
+                Tasks.whenAllComplete(tareas).addOnSuccessListener {
+                    userRef.delete()
+                        .addOnSuccessListener { callback(true) }
+                        .addOnFailureListener { callback(false) }
+                }.addOnFailureListener { callback(false) }
+            }
+            .addOnFailureListener { callback(false) }
     }
 
 

@@ -65,8 +65,12 @@ class MedicoActivity : AppCompatActivity() {
         // Configurar el menú lateral
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.nav_perfil -> Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show()
-                R.id.nav_settings -> Toast.makeText(this, "Configuración", Toast.LENGTH_SHORT).show()
+                R.id.nav_perfil -> {
+                    startActivity(Intent(this, EditarPerfilActivity::class.java))
+                }
+                R.id.nav_settings -> {
+                    startActivity(Intent(this, ConfiguracionActivity::class.java))
+                }
                 R.id.nav_logout -> {
                     Toast.makeText(this, "Cerrando sesión...", Toast.LENGTH_SHORT).show()
                     with(sharedPreferences.edit()) {
@@ -89,7 +93,10 @@ class MedicoActivity : AppCompatActivity() {
                     finish()
                 }
                 R.id.nav_medico -> Toast.makeText(this, "Ya estás en Médico", Toast.LENGTH_SHORT).show()
-                R.id.nav_ubicacion -> Toast.makeText(this, "Ubicación", Toast.LENGTH_SHORT).show()
+                R.id.nav_ubicacion -> {
+                    startActivity(Intent(this, UbicacionActivity::class.java))
+                    finish()
+                }
                 R.id.nav_mascota -> {
                     val intent = Intent(this, MascotasActivity::class.java)
                     startActivity(intent)
