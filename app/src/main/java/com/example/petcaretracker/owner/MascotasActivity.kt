@@ -1,4 +1,4 @@
-package com.example.petcaretracker
+package com.example.petcaretracker.owner
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.petcaretracker.ConfiguracionActivity
+import com.example.petcaretracker.EditarPerfilActivity
+import com.example.petcaretracker.FirebaseService
+import com.example.petcaretracker.LoginActivity
+import com.example.petcaretracker.Mascota
+import com.example.petcaretracker.R
+import com.example.petcaretracker.UbicacionActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -44,7 +51,10 @@ class MascotasActivity : AppCompatActivity() {
 
         // Configurar Toolbar
         setSupportActionBar(toolbar)
-        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer)
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar,
+            R.string.open_drawer,
+            R.string.close_drawer
+        )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 

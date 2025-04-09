@@ -1,11 +1,15 @@
-package com.example.petcaretracker
+package com.example.petcaretracker.owner
 
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.petcaretracker.FirebaseService
+import com.example.petcaretracker.R
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class HistorialMedicoActivity : AppCompatActivity() {
 
@@ -57,7 +61,11 @@ class HistorialMedicoActivity : AppCompatActivity() {
                     mascotaIds.add(it["id"].toString())
                     it["nombre_mascota"].toString()
                 }
-                spinnerMascotas.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, nombresMascotas)
+                spinnerMascotas.adapter = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    nombresMascotas
+                )
             } else {
                 Toast.makeText(this, "Error al cargar mascotas.", Toast.LENGTH_SHORT).show()
             }
@@ -72,15 +80,27 @@ class HistorialMedicoActivity : AppCompatActivity() {
                     val registroView = TextView(this)
                     val tipoAtencion = registro["tipo_atencion"].toString()
                     val descripcion = registro["descripcion"].toString()
-                    val timestamp = registro["fecha_registro"] as? com.google.firebase.Timestamp
+                    val veterinarioNombre =
+                        registro["veterinario_nombre"]?.toString() ?: "Desconocido"
+                    val clinica = registro["clinica"]?.toString() ?: "Sin clínica"
+                    val timestamp = registro["fecha_registro"] as? Timestamp
+
                     val fecha = if (timestamp != null) {
                         val date = timestamp.toDate()
-                        val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a", java.util.Locale.getDefault())
+                        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
                         dateFormat.format(date)
                     } else {
                         "Fecha no disponible"
                     }
-                    registroView.text = "Tipo: $tipoAtencion\nDescripción: $descripcion\nFecha: $fecha\n"
+
+                    registroView.text = """
+                    🐾 Tipo: $tipoAtencion
+                    📝 Descripción: $descripcion
+                    👨‍⚕️ Veterinario: $veterinarioNombre
+                    🏥 Clínica: $clinica
+                    📅 Fecha: $fecha
+                """.trimIndent()
+
                     registroView.setPadding(10, 10, 10, 10)
                     registroView.setBackgroundResource(R.drawable.border_item)
                     listaRegistros.addView(registroView)

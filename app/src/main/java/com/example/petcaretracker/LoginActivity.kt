@@ -2,9 +2,9 @@ package com.example.petcaretracker
 
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import com.example.petcaretracker.owner.RegisterActivity
 
 
 class LoginActivity : AppCompatActivity() {

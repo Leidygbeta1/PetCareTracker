@@ -1,60 +1,64 @@
-package com.example.petcaretracker
+package com.example.petcaretracker.owner
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
-import android.content.Context
+import com.example.petcaretracker.FirebaseService
+import com.example.petcaretracker.LoginActivity
+import com.example.petcaretracker.R
 
 class RegistroMedicoActivity : AppCompatActivity() {
 
     private lateinit var spinnerMascota: Spinner
     private lateinit var spinnerTipoAtencion: Spinner
+    private lateinit var spinnerClinica: Spinner
+    private lateinit var spinnerVeterinario: Spinner
     private lateinit var contenedorOpciones: LinearLayout
     private lateinit var btnGuardarRegistro: Button
     private lateinit var btnAtras: Button
-    private var userId: String = "" // 🔹 ID del usuario logueado
-    private var mascotaIds = mutableListOf<String>() // 🔹 IDs de las mascotas
+    private var userId: String = ""
+    private var mascotaIds = mutableListOf<String>()
+    private var listaVeterinariosId = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registro_medico)
 
-        Log.d("RegistroMedicoActivity", "Iniciando RegistroMedicoActivity...")
-
-        // 🔹 Obtener userId del intent
+        // Obtener userId de SharedPreferences
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = sharedPreferences.getString("userId", "") ?: ""
-        Log.d("RegistroMedicoActivity", "userId recibido: $userId")
 
-
-
-
-        // Inicializar elementos
+        // Inicializar vistas
         spinnerMascota = findViewById(R.id.spinnerMascota)
         spinnerTipoAtencion = findViewById(R.id.spinnerTipoAtencion)
+        spinnerClinica = findViewById(R.id.spinnerClinica)
+        spinnerVeterinario = findViewById(R.id.spinnerVeterinario)
         contenedorOpciones = findViewById(R.id.contenedorOpciones)
         btnGuardarRegistro = findViewById(R.id.btnGuardarRegistro)
         btnAtras = findViewById(R.id.btnAtras)
 
 
 
-        // 🔹 Cargar mascotas del usuario
+        // Cargar mascotas
         cargarMascotas()
 
-        // Lista de tipos de atención
+        // Tipos de atención
         val tiposAtencion = listOf("Tratamiento", "Rutina", "Vacunación", "Esterilización")
         spinnerTipoAtencion.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, tiposAtencion)
-
-        // Listener para tipos de atención
         spinnerTipoAtencion.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 actualizarOpciones(tiposAtencion[position])
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
+
+        // Cargar clínicas disponibles
+        cargarClinicas()
 
         // Guardar registro médico
         btnGuardarRegistro.setOnClickListener {
@@ -62,8 +66,19 @@ class RegistroMedicoActivity : AppCompatActivity() {
             val mascotaId = mascotaIds[mascotaSeleccionada]
             val tipoAtencion = spinnerTipoAtencion.selectedItem.toString()
             val detalles = obtenerDetalles()
+            val clinica = spinnerClinica.selectedItem?.toString() ?: ""
+            val veterinarioId = listaVeterinariosId.getOrNull(spinnerVeterinario.selectedItemPosition) ?: ""
+            val veterinarioNombre = spinnerVeterinario.selectedItem?.toString() ?: ""
 
-            FirebaseService.guardarRegistroMedico(userId, mascotaId, tipoAtencion, detalles) { success ->
+            FirebaseService.guardarRegistroMedico(
+                userId,
+                mascotaId,
+                tipoAtencion,
+                detalles,
+                veterinarioId,
+                veterinarioNombre,
+                clinica
+            ) { success ->
                 if (success) {
                     Toast.makeText(this, "Registro guardado exitosamente.", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, HomeActivity::class.java))
@@ -74,17 +89,15 @@ class RegistroMedicoActivity : AppCompatActivity() {
             }
         }
 
-        // Acción para regresar
+
         btnAtras.setOnClickListener {
             startActivity(Intent(this, MedicoActivity::class.java))
             finish()
         }
     }
 
-    // 🔹 Cargar mascotas del usuario desde Firebase
     private fun cargarMascotas() {
         if (userId.isEmpty()) {
-            Log.e("RegistroMedicoActivity", "userId está vacío, redirigiendo a LoginActivity")
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
@@ -103,7 +116,39 @@ class RegistroMedicoActivity : AppCompatActivity() {
         }
     }
 
-    // Actualizar opciones según el tipo de atención
+    private fun cargarClinicas() {
+        FirebaseService.obtenerClinicasDisponibles { clinicas ->
+            if (clinicas != null) {
+                spinnerClinica.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, clinicas)
+                spinnerClinica.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        val clinicaSeleccionada = clinicas[position]
+                        cargarVeterinariosPorClinica(clinicaSeleccionada)
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
+            } else {
+                Toast.makeText(this, "No hay clínicas disponibles", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun cargarVeterinariosPorClinica(clinica: String) {
+        FirebaseService.obtenerVeterinariosPorClinica(clinica) { veterinarios ->
+            if (veterinarios != null) {
+                listaVeterinariosId.clear()
+                val nombres = veterinarios.map {
+                    listaVeterinariosId.add(it["id"].toString())
+                    it["nombre_completo"].toString()
+                }
+                spinnerVeterinario.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, nombres)
+            } else {
+                Toast.makeText(this, "No hay veterinarios para esta clínica", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private fun actualizarOpciones(tipo: String) {
         contenedorOpciones.removeAllViews()
         when (tipo) {
@@ -134,7 +179,6 @@ class RegistroMedicoActivity : AppCompatActivity() {
         }
     }
 
-    // Obtener detalles seleccionados
     private fun obtenerDetalles(): String {
         val detalles = StringBuilder()
         for (i in 0 until contenedorOpciones.childCount) {
@@ -148,5 +192,6 @@ class RegistroMedicoActivity : AppCompatActivity() {
         return detalles.toString()
     }
 }
+
 
 

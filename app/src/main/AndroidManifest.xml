@@ -46,24 +46,37 @@
         </activity>
 
         <activity android:name=".LoginActivity"/>
-        <activity android:name=".RegisterActivity"/>
-        <activity android:name=".HomeActivity"/>
-        <activity android:name=".MedicoActivity"/>
-        <activity android:name=".RegistroMedicoActivity"/>
         <activity android:name=".LoginActivity2"/>
-        <activity android:name=".HistorialMedicoActivity"/>
-        <activity android:name=".AgregarRecordatorioActivity"/>
-        <activity android:name=".RecordatorioVacunasActivity"/>
-        <activity android:name=".VerCalendarioActivity"/>
-        <activity android:name=".MascotasActivity"/>
-        <activity android:name=".AgregarMascotaActivity"/>
-        <activity android:name=".EditarMascotaActivity"/>
-        <activity android:name=".CarnetVacunacionActivity"/>
-        <activity android:name=".AgregarVacunaActivity"/>
-        <activity android:name=".AlimentacionActivity"/>
+
+        <!-- 🐾 Owner -->
+        <activity android:name=".owner.RegisterActivity" />
+        <activity android:name=".owner.HomeActivity"/>
+        <activity android:name=".owner.MedicoActivity"/>
+        <activity android:name=".owner.RegistroMedicoActivity"/>
+        <activity android:name=".owner.HistorialMedicoActivity"/>
+        <activity android:name=".owner.AgregarRecordatorioActivity"/>
+        <activity android:name=".owner.RecordatorioVacunasActivity"/>
+        <activity android:name=".owner.VerCalendarioActivity"/>
+        <activity android:name=".owner.MascotasActivity"/>
+        <activity android:name=".owner.AgregarMascotaActivity"/>
+        <activity android:name=".owner.EditarMascotaActivity"/>
+        <activity android:name=".owner.CarnetVacunacionActivity"/>
+        <activity android:name=".owner.AgregarVacunaActivity"/>
+        <activity android:name=".owner.AlimentacionActivity"/>
+
+        <!-- 🌐 Compartido -->
         <activity android:name=".UbicacionActivity"/>
         <activity android:name=".EditarPerfilActivity"/>
         <activity android:name=".ConfiguracionActivity"/>
+
+        <!-- 👨‍⚕️ Veterinario -->
+        <activity android:name=".veterinario.HomeVeterinarioActivity"/>
+        <activity android:name=".veterinario.MedicoVeterinarioActivity"/>
+        <activity android:name=".veterinario.MascotasVeterinarioActivity"/>
+        <activity android:name=".veterinario.EstadisticasVeterinarioActivity"/>
+        <activity android:name=".veterinario.MensajesVeterinarioActivity"/>
+        <activity android:name=".veterinario.HorariosVeterinarioActivity"/>
+        <activity android:name=".veterinario.ReputacionVeterinarioActivity"/>
 
 
 

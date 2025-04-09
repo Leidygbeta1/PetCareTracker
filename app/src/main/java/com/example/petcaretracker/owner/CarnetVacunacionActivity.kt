@@ -1,20 +1,19 @@
-package com.example.petcaretracker
+package com.example.petcaretracker.owner
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.petcaretracker.FirebaseService
+import com.example.petcaretracker.R
+import com.example.petcaretracker.Vacuna
 
 class CarnetVacunacionActivity : AppCompatActivity() {
 
@@ -80,7 +79,11 @@ class CarnetVacunacionActivity : AppCompatActivity() {
                     mascotaIds.add(it["id"].toString())
                     it["nombre_mascota"].toString()
                 }
-                spinnerMascotas.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, nombresMascotas)
+                spinnerMascotas.adapter = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    nombresMascotas
+                )
             } else {
                 Toast.makeText(this, "Error al cargar mascotas.", Toast.LENGTH_SHORT).show()
             }

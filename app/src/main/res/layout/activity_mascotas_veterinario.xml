@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="?android:windowBackground"
 
-    tools:context=".owner.HomeActivity">
+    >
 
     <!-- Contenedor Principal -->
     <LinearLayout
@@ -22,21 +22,29 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#1976D2"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:title="PetCareTracker"
+            app:title="Mascotas"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:navigationIcon="@drawable/ic_menu"/> <!-- 🔹 Ícono del menú -->
+            app:navigationIcon="@drawable/ic_menu"/>
 
-
-
-
-        <!-- Contenido Principal con las Tarjetas -->
+        <!-- RecyclerView para mostrar las mascotas -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/recyclerViewMascotasVeterinario"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:padding="10dp"
             android:clipToPadding="false"/>
+
+        <TextView
+            android:id="@+id/tvMensajeVacio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No se encontraron mascotas relacionadas."
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:visibility="gone"/>
 
         <!-- Menú de Navegación Inferior -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -59,4 +67,3 @@
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu"/>
 </androidx.drawerlayout.widget.DrawerLayout>
-

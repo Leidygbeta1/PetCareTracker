@@ -1,4 +1,4 @@
-package com.example.petcaretracker
+package com.example.petcaretracker.owner
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
@@ -6,8 +6,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.petcaretracker.FirebaseService
+import com.example.petcaretracker.R
 import com.example.petcaretracker.Vacuna  // Importa tu clase Vacuna, asegúrate de tenerla en el paquete correcto
-import com.google.firebase.firestore.FirebaseFirestore  // Si usas Firebase para guardar los datos
 import java.util.Calendar
 
 
@@ -67,7 +68,8 @@ class AgregarVacunaActivity : AppCompatActivity() {
                 val nuevaVacuna = Vacuna(nombreVacuna, fechaAplicacion, proximaDosis, veterinario)
                 FirebaseService.agregarVacuna(userId, mascotaId, nuevaVacuna) { success ->
                     if (success) {
-                        Toast.makeText(this, "Vacuna agregada correctamente.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Vacuna agregada correctamente.", Toast.LENGTH_SHORT)
+                            .show()
                         finish() // Cerrar la actividad al agregar la vacuna
                     } else {
                         Toast.makeText(this, "Error al agregar vacuna.", Toast.LENGTH_SHORT).show()

@@ -12,6 +12,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.petcaretracker.cuidador.HomeCuidadorActivity
+import com.example.petcaretracker.owner.HomeActivity
+import com.example.petcaretracker.owner.MascotasActivity
+import com.example.petcaretracker.owner.MedicoActivity
+import com.example.petcaretracker.veterinario.HomeVeterinarioActivity
+import com.example.petcaretracker.veterinario.MascotasVeterinarioActivity
+import com.example.petcaretracker.veterinario.MedicoVeterinarioActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -112,26 +119,46 @@ class EditarPerfilActivity : AppCompatActivity() {
             true
         }
 
+        val rol = sharedPreferences.getString("rol", "Owner") ?: "Owner"
+
         bottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
+                    if (rol == "Veterinario") {
+                        startActivity(Intent(this, HomeVeterinarioActivity::class.java))
+                    } else if (rol == "Cuidador") {
+                        startActivity(Intent(this, HomeCuidadorActivity::class.java))
+                    } else {
+                        startActivity(Intent(this, HomeActivity::class.java))
+                    }
                     finish()
                 }
+
                 R.id.nav_medico -> {
-                    startActivity(Intent(this, MedicoActivity::class.java))
+                    if (rol == "Veterinario") {
+                        startActivity(Intent(this, MedicoVeterinarioActivity::class.java))
+                    } else {
+                        startActivity(Intent(this, MedicoActivity::class.java))
+                    }
                     finish()
                 }
+
                 R.id.nav_ubicacion -> {
                     startActivity(Intent(this, UbicacionActivity::class.java))
                     finish()
                 }
+
                 R.id.nav_mascota -> {
-                    startActivity(Intent(this, MascotasActivity::class.java))
+                    if (rol == "Veterinario") {
+                        startActivity(Intent(this, MascotasVeterinarioActivity::class.java))
+                    } else {
+                        startActivity(Intent(this, MascotasActivity::class.java))
+                    }
                     finish()
                 }
             }
             true
         }
+
     }
 }

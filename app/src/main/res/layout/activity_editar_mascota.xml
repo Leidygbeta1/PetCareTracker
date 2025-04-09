@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".EditarMascotaActivity">
+    android:background="?android:windowBackground"
+
+    tools:context=".owner.EditarMascotaActivity">
 
     <!-- Campo Nombre -->
     <EditText

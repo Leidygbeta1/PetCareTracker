@@ -1,11 +1,15 @@
-package com.example.petcaretracker
-import android.content.Context
+package com.example.petcaretracker.owner
+
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
+import com.example.petcaretracker.FirebaseService
+import com.example.petcaretracker.R
+import com.example.petcaretracker.cuidador.HomeCuidadorActivity
+import com.example.petcaretracker.veterinario.HomeVeterinarioActivity
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -18,43 +22,72 @@ class RegisterActivity : AppCompatActivity() {
         val etContrasena: EditText = findViewById(R.id.etContrasena)
         val etCorreo: EditText = findViewById(R.id.etCorreo)
         val etNumMascotas: EditText = findViewById(R.id.etNumMascotas)
+        val etClinica: EditText = findViewById(R.id.etClinica)
+        val spinnerRol: Spinner = findViewById(R.id.spinnerRol)
         val contenedorMascotas: LinearLayout = findViewById(R.id.contenedorMascotas)
         val btnRegistrar: Button = findViewById(R.id.btnRegistrar)
+
+        // Configurar Spinner de roles
+        val roles = listOf("Owner", "Cuidador", "Veterinario")
+        val adapterRoles = ArrayAdapter(this, android.R.layout.simple_spinner_item, roles)
+        adapterRoles.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerRol.adapter = adapterRoles
+
+        // Mostrar u ocultar campos según el rol
+        spinnerRol.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                when (roles[position]) {
+                    "Owner" -> {
+                        etNumMascotas.visibility = android.view.View.VISIBLE
+                        contenedorMascotas.visibility = android.view.View.VISIBLE
+                        etClinica.visibility = android.view.View.GONE
+                    }
+                    "Cuidador" -> {
+                        etNumMascotas.visibility = android.view.View.GONE
+                        contenedorMascotas.visibility = android.view.View.GONE
+                        etClinica.visibility = android.view.View.GONE
+                    }
+                    "Veterinario" -> {
+                        etNumMascotas.visibility = android.view.View.GONE
+                        contenedorMascotas.visibility = android.view.View.GONE
+                        etClinica.visibility = android.view.View.VISIBLE
+                    }
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         // Diccionario de razas según el tipo de mascota
         val razasMascotas = mapOf(
             "Perro" to listOf("Labrador", "Bulldog", "Pug", "Golden Retriever"),
             "Gato" to listOf("Siames", "Persa", "Sphynx", "Maine Coon"),
             "Ave" to listOf("Loro", "Canario", "Cacatúa", "Periquito"),
-            "Otro" to listOf("Desconocido") // Default
+            "Otro" to listOf("Desconocido")
         )
 
         // Detecta cambios en el número de mascotas y genera campos dinámicos
         etNumMascotas.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                contenedorMascotas.removeAllViews() // Limpia campos previos
+                contenedorMascotas.removeAllViews()
                 val numMascotas = s.toString().toIntOrNull() ?: 0
 
                 for (i in 1..numMascotas) {
-                    // Título para cada mascota
                     val textMascota = TextView(this@RegisterActivity)
                     textMascota.text = "Mascota $i"
                     textMascota.textSize = 18f
-                    textMascota.setPadding(0, 20, 0, 10) // 🔹 Añade espacio superior e inferior
+                    textMascota.setPadding(0, 20, 0, 10)
                     contenedorMascotas.addView(textMascota)
 
-                    // Campo para el nombre de la mascota
                     val etMascota = EditText(this@RegisterActivity)
                     etMascota.hint = "Nombre de Mascota $i"
                     val paramsMascota = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
-                    paramsMascota.setMargins(0, 10, 0, 10) // 🔹 Espaciado superior e inferior
+                    paramsMascota.setMargins(0, 10, 0, 10)
                     etMascota.layoutParams = paramsMascota
                     contenedorMascotas.addView(etMascota)
 
-                    // Spinner para el tipo de mascota
                     val spinnerTipoMascota = Spinner(this@RegisterActivity)
                     val tiposMascotas = listOf("Perro", "Gato", "Ave", "Otro")
                     val adapterTipo = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_item, tiposMascotas)
@@ -64,11 +97,10 @@ class RegisterActivity : AppCompatActivity() {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
-                    paramsTipo.setMargins(0, 10, 0, 10) // 🔹 Espaciado superior e inferior
+                    paramsTipo.setMargins(0, 10, 0, 10)
                     spinnerTipoMascota.layoutParams = paramsTipo
                     contenedorMascotas.addView(spinnerTipoMascota)
 
-                    // Spinner para la raza de la mascota
                     val spinnerRaza = Spinner(this@RegisterActivity)
                     val adapterRaza = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_item, listOf("Selecciona un tipo primero"))
                     adapterRaza.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -77,20 +109,13 @@ class RegisterActivity : AppCompatActivity() {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
-                    paramsRaza.setMargins(0, 10, 0, 20) // 🔹 Más espacio inferior
+                    paramsRaza.setMargins(0, 10, 0, 20)
                     spinnerRaza.layoutParams = paramsRaza
                     contenedorMascotas.addView(spinnerRaza)
 
-                    // Manejo de cambio de selección del tipo de mascota para actualizar razas
                     spinnerTipoMascota.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
                             val tipoSeleccionado = tiposMascotas[position]
-                            val razasMascotas = mapOf(
-                                "Perro" to listOf("Labrador", "Bulldog", "Pug", "Golden Retriever"),
-                                "Gato" to listOf("Siames", "Persa", "Sphynx", "Maine Coon"),
-                                "Ave" to listOf("Loro", "Canario", "Cacatúa", "Periquito"),
-                                "Otro" to listOf("Desconocido")
-                            )
                             val razas = razasMascotas[tipoSeleccionado] ?: listOf("Desconocido")
                             val adapterNuevaRaza = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_item, razas)
                             adapterNuevaRaza.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -104,57 +129,81 @@ class RegisterActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // Acción al presionar el botón de registro
         btnRegistrar.setOnClickListener {
             val nombre = etNombre.text.toString()
             val usuario = etUsuario.text.toString()
             val contrasena = etContrasena.text.toString()
             val correo = etCorreo.text.toString()
+            val rolSeleccionado = spinnerRol.selectedItem.toString()
+            val nombreClinica = etClinica.text.toString()
             val numMascotas = etNumMascotas.text.toString().toIntOrNull() ?: 0
 
-            if (nombre.isEmpty() || usuario.isEmpty() || contrasena.isEmpty() || correo.isEmpty()) {
+            if (nombre.isEmpty() || usuario.isEmpty() || contrasena.isEmpty() || correo.isEmpty() || rolSeleccionado.isEmpty()) {
                 Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Recoger datos de las mascotas
             val datosMascotas = mutableListOf<Map<String, String>>()
-            for (i in 0 until contenedorMascotas.childCount step 4) {
-                val nombreMascota = (contenedorMascotas.getChildAt(i + 1) as EditText).text.toString()
-                val tipoMascota = (contenedorMascotas.getChildAt(i + 2) as Spinner).selectedItem.toString()
-                val razaMascota = (contenedorMascotas.getChildAt(i + 3) as Spinner).selectedItem.toString()
+            if (rolSeleccionado == "Owner") {
+                for (i in 0 until contenedorMascotas.childCount step 4) {
+                    val nombreMascota = (contenedorMascotas.getChildAt(i + 1) as EditText).text.toString()
+                    val tipoMascota = (contenedorMascotas.getChildAt(i + 2) as Spinner).selectedItem.toString()
+                    val razaMascota = (contenedorMascotas.getChildAt(i + 3) as Spinner).selectedItem.toString()
 
-                if (nombreMascota.isNotEmpty()) {
-                    val mascotaData = mapOf(
-                        "nombre_mascota" to nombreMascota,
-                        "tipo" to tipoMascota,
-                        "raza" to razaMascota
-                    )
-                    datosMascotas.add(mascotaData)
+                    if (nombreMascota.isNotEmpty()) {
+                        val mascotaData = mapOf(
+                            "nombre_mascota" to nombreMascota,
+                            "tipo" to tipoMascota,
+                            "raza" to razaMascota
+                        )
+                        datosMascotas.add(mascotaData)
+                    }
                 }
             }
 
-            // Guardar usuario y mascotas en Firebase
-            FirebaseService.registrarUsuario(nombre, usuario, contrasena, correo, numMascotas, datosMascotas) { success, userId  ->
+            FirebaseService.registrarUsuario(
+                nombre,
+                usuario,
+                contrasena,
+                correo,
+                numMascotas,
+                datosMascotas,
+                rolSeleccionado,
+                nombreClinica
+            ) { success, userId ->
                 if (success && userId != null) {
-                    // 🔄 Guardar el userId en SharedPreferences
-                    val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                    val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
                     with(sharedPreferences.edit()) {
                         putString("userId", userId)
+                        putString("rol", rolSeleccionado)
                         apply()
                     }
 
-                    Toast.makeText(this, "Registro exitoso. Bienvenido, $nombre!", Toast.LENGTH_LONG).show()
-                    val intent = Intent(this, HomeActivity::class.java)
-                    startActivity(intent)
+                    Toast.makeText(
+                        this,
+                        "Registro exitoso. Bienvenido, $nombre!",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    if (rolSeleccionado == "Veterinario") {
+                        startActivity(Intent(this, HomeVeterinarioActivity::class.java))
+                    } else if (rolSeleccionado == "Cuidador") {
+                        startActivity(Intent(this, HomeCuidadorActivity::class.java))
+                    } else {
+                        // Owner
+                        startActivity(Intent(this, HomeActivity::class.java))
+                    }
+
+
                     finish()
                 } else {
-                    Toast.makeText(this, "Error al registrar. Intenta de nuevo.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error al registrar. Intenta de nuevo.", Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         }
-
     }
-
 }
+
+
 

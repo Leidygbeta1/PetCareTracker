@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context=".RegistroMedicoActivity">
+    android:background="?android:windowBackground"
+
+    tools:context=".owner.RegistroMedicoActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,13 +45,44 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"/>
 
-        <!-- Contenedor dinámico para opciones -->
+        <!-- Contenedor para opciones dinámicas según atención -->
         <LinearLayout
             android:id="@+id/contenedorOpciones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="10dp"/>
+
+        <!-- Selección de Clínica -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecciona Clínica:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerClinica"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Selección de Veterinario -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecciona Veterinario:"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="5dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerVeterinario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"/>
 
         <!-- Botón Guardar -->
         <Button
@@ -72,6 +105,6 @@
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:layout_marginTop="10dp"/>
+
     </LinearLayout>
 </ScrollView>
-

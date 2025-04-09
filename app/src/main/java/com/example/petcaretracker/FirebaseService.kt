@@ -3,6 +3,7 @@ package com.example.petcaretracker
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.example.petcaretracker.veterinario.MascotaVeterinario
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,43 +23,55 @@ object FirebaseService {
         correo: String,
         numMascotas: Int,
         datosMascotas: List<Map<String, String>>,
-        callback: (Boolean, String?) -> Unit  // 🔄 Modificado para devolver userId
+        rol: String,
+        nombreClinica: String,
+        callback: (Boolean, String?) -> Unit
     ) {
         val userId = db.collection("usuarios").document().id
 
+        // Datos comunes del usuario
         val usuarioData = hashMapOf(
             "nombre_completo" to nombre,
             "nombre_usuario" to usuario,
             "contrasena" to contrasena,
             "correo_electronico" to correo,
             "numero_mascotas" to numMascotas,
+            "rol" to rol,
             "fecha_registro" to com.google.firebase.Timestamp.now()
         )
+
+        // Si el rol es veterinario, añadimos la clínica
+        if (rol == "Veterinario" && nombreClinica.isNotEmpty()) {
+            usuarioData["clinica"] = nombreClinica
+        }
 
         db.collection("usuarios").document(userId)
             .set(usuarioData)
             .addOnSuccessListener {
                 Log.d("FirebaseService", "Usuario registrado correctamente.")
 
-                // Guardar cada mascota como subcolección
-                datosMascotas.forEach { mascota ->
-                    db.collection("usuarios").document(userId).collection("mascotas")
-                        .add(mascota)
-                        .addOnSuccessListener {
-                            Log.d("FirebaseService", "Mascota guardada correctamente.")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("FirebaseService", "Error al guardar mascota", e)
-                        }
+                // Si el usuario es 'Owner', guardar mascotas como subcolección
+                if (rol == "Owner") {
+                    datosMascotas.forEach { mascota ->
+                        db.collection("usuarios").document(userId).collection("mascotas")
+                            .add(mascota)
+                            .addOnSuccessListener {
+                                Log.d("FirebaseService", "Mascota guardada correctamente.")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("FirebaseService", "Error al guardar mascota", e)
+                            }
+                    }
                 }
 
-                callback(true, userId)  // 🔄 Devolver true y el userId
+                callback(true, userId)
             }
             .addOnFailureListener { e ->
                 Log.e("FirebaseService", "Error al registrar usuario", e)
-                callback(false, null)  // 🔄 Devolver false y null en caso de error
+                callback(false, null)
             }
     }
+
 
 
     // 🔄 Obtener Datos del Usuario y sus Mascotas
@@ -121,11 +134,17 @@ object FirebaseService {
         mascotaId: String,
         tipoAtencion: String,
         descripcion: String,
+        veterinarioId: String,
+        veterinarioNombre: String, // ❗️FALTA EN LA LLAMADA
+        clinica: String,
         callback: (Boolean) -> Unit
     ) {
         val registroData = hashMapOf(
             "tipo_atencion" to tipoAtencion,
             "descripcion" to descripcion,
+            "veterinario_id" to veterinarioId,
+            "veterinario_nombre" to veterinarioNombre,
+            "clinica" to clinica,
             "fecha_registro" to com.google.firebase.Timestamp.now()
         )
 
@@ -142,34 +161,41 @@ object FirebaseService {
             }
     }
 
-    fun iniciarSesion(usuario: String, contrasena: String, callback: (Boolean, String?) -> Unit) {
+
+
+    fun iniciarSesion(usuario: String, contrasena: String, callback: (Boolean, String?, String?) -> Unit) {
         db.collection("usuarios")
             .whereEqualTo("nombre_usuario", usuario)
             .whereEqualTo("contrasena", contrasena)
             .get()
             .addOnSuccessListener { documents ->
                 if (!documents.isEmpty) {
-                    val userId = documents.documents[0].id
-                    Log.d("FirebaseService", "Inicio de sesión exitoso. userId: $userId")
+                    val doc = documents.documents[0]
+                    val userId = doc.id
+                    val rol = doc.getString("rol") ?: "Owner" // por defecto
 
-                    // Guardar el userId en SharedPreferences
+                    Log.d("FirebaseService", "Inicio de sesión exitoso. userId: $userId - rol: $rol")
+
+                    // Guardar en SharedPreferences
                     val sharedPreferences = MyApp.context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                     with(sharedPreferences.edit()) {
                         putString("userId", userId)
+                        putString("rol", rol)
                         apply()
                     }
 
-                    callback(true, userId)
+                    callback(true, userId, rol)
                 } else {
                     Log.e("FirebaseService", "Usuario o contraseña incorrectos")
-                    callback(false, null)
+                    callback(false, null, null)
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("FirebaseService", "Error al iniciar sesión", e)
-                callback(false, null)
+                callback(false, null, null)
             }
     }
+
 
 
 
@@ -335,6 +361,135 @@ object FirebaseService {
                 }.addOnFailureListener { callback(false) }
             }
             .addOnFailureListener { callback(false) }
+    }
+
+    fun obtenerClinicasDisponibles(callback: (List<String>?) -> Unit) {
+        db.collection("usuarios")
+            .get()
+            .addOnSuccessListener { result ->
+                val clinicas = mutableListOf<String>()
+                for (doc in result) {
+                    val rol = doc.getString("rol")
+                    val clinica = doc.getString("clinica")
+                    Log.d("DEBUG_FIREBASE", "Usuario: ${doc.id}, rol: $rol, clinica: $clinica")
+                    if (rol == "Veterinario" && clinica != null) {
+                        clinicas.add(clinica)
+                    }
+                }
+                val distintas = clinicas.toSet().toList()
+                Log.d("DEBUG_FIREBASE", "Clínicas filtradas: $distintas")
+                callback(distintas)
+            }
+            .addOnFailureListener {
+                Log.e("DEBUG_FIREBASE", "Error al obtener clínicas", it)
+                callback(null)
+            }
+    }
+
+    fun obtenerVeterinariosPorClinica(clinica: String, callback: (List<Map<String, String>>?) -> Unit) {
+        db.collection("usuarios")
+            .whereEqualTo("rol", "Veterinario")
+            .whereEqualTo("clinica", clinica)
+            .get()
+            .addOnSuccessListener { result ->
+                val veterinarios = result.map {
+                    mapOf(
+                        "id" to it.id,
+                        "nombre_completo" to (it.getString("nombre_completo") ?: "Sin Nombre")
+                    )
+                }
+                callback(veterinarios)
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+    fun obtenerMascotasPorVeterinario(
+        veterinarioId: String,
+        callback: (List<MascotaVeterinario>) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val resultado = mutableListOf<MascotaVeterinario>()
+
+        db.collection("usuarios").get().addOnSuccessListener { usuariosSnapshot ->
+            val usuarios = usuariosSnapshot.documents
+            if (usuarios.isEmpty()) {
+                callback(emptyList())
+                return@addOnSuccessListener
+            }
+
+            var usuariosProcesados = 0
+
+            for (usuarioDoc in usuarios) {
+                val userId = usuarioDoc.id
+                val nombreDueno = usuarioDoc.getString("nombre_completo") ?: "Sin Nombre"
+
+                db.collection("usuarios").document(userId).collection("mascotas").get()
+                    .addOnSuccessListener { mascotasSnapshot ->
+                        val mascotas = mascotasSnapshot.documents
+                        if (mascotas.isEmpty()) {
+                            usuariosProcesados++
+                            if (usuariosProcesados == usuarios.size) {
+                                callback(resultado)
+                            }
+                            return@addOnSuccessListener
+                        }
+
+                        var mascotasProcesadas = 0
+
+                        for (mascotaDoc in mascotas) {
+                            val nombreMascota = mascotaDoc.getString("nombre_mascota") ?: "Sin Nombre"
+                            val raza = mascotaDoc.getString("raza") ?: "Sin raza"
+                            val tipo = mascotaDoc.getString("tipo") ?: "Sin tipo"
+                            val foto = mascotaDoc.getString("foto") ?: ""
+
+                            val mascotaId = mascotaDoc.id
+                            db.collection("usuarios").document(userId)
+                                .collection("mascotas").document(mascotaId)
+                                .collection("registros_medicos")
+                                .whereEqualTo("veterinario_id", veterinarioId)
+                                .get()
+                                .addOnSuccessListener { registrosSnapshot ->
+                                    if (!registrosSnapshot.isEmpty) {
+                                        resultado.add(
+                                            MascotaVeterinario(
+                                                nombre = nombreMascota,
+                                                raza = raza,
+                                                tipo = tipo,
+                                                foto = foto,
+                                                nombreDueno = nombreDueno
+                                            )
+                                        )
+                                    }
+
+                                    mascotasProcesadas++
+                                    if (mascotasProcesadas == mascotas.size) {
+                                        usuariosProcesados++
+                                        if (usuariosProcesados == usuarios.size) {
+                                            callback(resultado)
+                                        }
+                                    }
+                                }.addOnFailureListener {
+                                    mascotasProcesadas++
+                                    if (mascotasProcesadas == mascotas.size) {
+                                        usuariosProcesados++
+                                        if (usuariosProcesados == usuarios.size) {
+                                            callback(resultado)
+                                        }
+                                    }
+                                }
+                        }
+                    }.addOnFailureListener {
+                        usuariosProcesados++
+                        if (usuariosProcesados == usuarios.size) {
+                            callback(resultado)
+                        }
+                    }
+            }
+        }.addOnFailureListener {
+            callback(emptyList())
+        }
     }
 
 

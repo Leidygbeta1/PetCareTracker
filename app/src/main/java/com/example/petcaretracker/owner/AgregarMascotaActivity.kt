@@ -1,4 +1,4 @@
-package com.example.petcaretracker
+package com.example.petcaretracker.owner
 
 import android.app.Activity
 import android.content.Context
@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.petcaretracker.FirebaseService
+import com.example.petcaretracker.R
 
 class AgregarMascotaActivity : AppCompatActivity() {
 
@@ -59,7 +61,13 @@ class AgregarMascotaActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            FirebaseService.agregarMascota(userId, nombre, raza, tipo, imageUri) { success, message ->
+            FirebaseService.agregarMascota(
+                userId,
+                nombre,
+                raza,
+                tipo,
+                imageUri
+            ) { success, message ->
                 if (success) {
                     Toast.makeText(this, "Mascota guardada con éxito", Toast.LENGTH_SHORT).show()
                     finish()

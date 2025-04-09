@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
+    android:background="?android:windowBackground"
+
     android:padding="16dp">
 
 

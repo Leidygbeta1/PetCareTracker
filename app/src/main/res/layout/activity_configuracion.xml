@@ -5,14 +5,16 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="?android:windowBackground"
+
     tools:context=".ConfiguracionActivity">
 
     <!-- Contenedor principal -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="?android:colorBackground">
 
         <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar

@@ -5,8 +5,9 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    tools:context=".MascotasActivity">
+    android:background="?android:windowBackground"
+
+    tools:context=".owner.MascotasActivity">
 
     <!-- Contenedor Principal -->
     <LinearLayout

@@ -1,8 +1,7 @@
-package com.example.petcaretracker
+package com.example.petcaretracker.owner
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Bundle
 import android.widget.ListView
 import android.widget.Toast
@@ -10,7 +9,8 @@ import android.widget.CalendarView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
-import android.widget.TextView
+import com.example.petcaretracker.LoginActivity
+import com.example.petcaretracker.R
 import com.google.firebase.firestore.FirebaseFirestore
 
 class VerCalendarioActivity : AppCompatActivity() {
