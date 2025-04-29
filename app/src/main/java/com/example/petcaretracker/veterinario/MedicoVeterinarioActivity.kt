@@ -83,7 +83,7 @@ class MedicoVeterinarioActivity : AppCompatActivity() {
                 }
                 R.id.nav_medico -> Toast.makeText(this, "Ya estás en Médico", Toast.LENGTH_SHORT).show()
                 R.id.nav_ubicacion -> {
-                    startActivity(Intent(this, UbicacionActivity::class.java))
+                    startActivity(Intent(this, UbicacionVeterinarioActivity::class.java))
                     finish()
                 }
                 R.id.nav_mascota -> {

@@ -65,7 +65,7 @@
         <activity android:name=".owner.AlimentacionActivity"/>
 
         <!-- 🌐 Compartido -->
-        <activity android:name=".UbicacionActivity"/>
+        <activity android:name=".owner.UbicacionActivity"/>
         <activity android:name=".EditarPerfilActivity"/>
         <activity android:name=".ConfiguracionActivity"/>
 
@@ -78,6 +78,18 @@
         <activity android:name=".veterinario.HorariosVeterinarioActivity"/>
         <activity android:name=".veterinario.ReputacionVeterinarioActivity"/>
 
+        <activity android:name=".cuidador.HomeCuidadorActivity"/>
+        <activity android:name=".cuidador.MascotasCuidadorActivity"/>
+
+
+        <!-- 🐾 Dueño -->
+        <activity android:name=".owner.MensajesActivity"/>
+
+        <!-- 💬 Chat uno-a-uno -->
+        <activity android:name=".ChatActivity"/>
+
+
+        <activity android:name=".cuidador.MensajesCuidadorActivity"/>
 
 
     </application>

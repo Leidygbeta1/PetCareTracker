@@ -110,7 +110,7 @@ class MascotasVeterinarioActivity : AppCompatActivity() {
                     finish()
                 }
                 R.id.nav_ubicacion -> {
-                    startActivity(Intent(this, UbicacionActivity::class.java))
+                    startActivity(Intent(this, UbicacionVeterinarioActivity::class.java))
                     finish()
                 }
                 R.id.nav_mascota -> Toast.makeText(this, "Ya estás en Mascotas", Toast.LENGTH_SHORT).show()

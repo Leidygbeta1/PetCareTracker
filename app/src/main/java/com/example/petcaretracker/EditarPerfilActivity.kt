@@ -16,6 +16,7 @@ import com.example.petcaretracker.cuidador.HomeCuidadorActivity
 import com.example.petcaretracker.owner.HomeActivity
 import com.example.petcaretracker.owner.MascotasActivity
 import com.example.petcaretracker.owner.MedicoActivity
+import com.example.petcaretracker.owner.UbicacionActivity
 import com.example.petcaretracker.veterinario.HomeVeterinarioActivity
 import com.example.petcaretracker.veterinario.MascotasVeterinarioActivity
 import com.example.petcaretracker.veterinario.MedicoVeterinarioActivity

@@ -19,7 +19,6 @@ import com.example.petcaretracker.FirebaseService
 import com.example.petcaretracker.FuncionesAdapter
 import com.example.petcaretracker.LoginActivity
 import com.example.petcaretracker.R
-import com.example.petcaretracker.UbicacionActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -142,7 +141,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun getFunciones(): List<String> {
-        return listOf("Trackeo de Recorridos", "Alimentación Proporcional a la mascota", "Mejores Estéticas y Veterinarias Certificadas", "Compartir ubicación")
+        return listOf("Trackeo de Recorridos", "Alimentación Proporcional a la mascota", "Mejores Estéticas y Veterinarias Certificadas", "Compartir ubicación","Mensajes")
     }
 }
 

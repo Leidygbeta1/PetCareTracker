@@ -1,4 +1,4 @@
-package com.example.petcaretracker.veterinario
+package com.example.petcaretracker.cuidador
 
 import android.app.AlertDialog
 import android.content.Context
@@ -18,7 +18,7 @@ import com.example.petcaretracker.R
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MensajesVeterinarioActivity : AppCompatActivity() {
+class MensajesCuidadorActivity : AppCompatActivity() {
 
     private lateinit var rvChats: RecyclerView
     private lateinit var adapter: ChatListAdapter
@@ -31,7 +31,7 @@ class MensajesVeterinarioActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mensajes)
 
-        // 1) Recuperar userId de SharedPreferences
+        // 1) Recuperar userId
         val prefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         userId = prefs.getString("userId","") ?: ""
         if (userId.isEmpty()) {

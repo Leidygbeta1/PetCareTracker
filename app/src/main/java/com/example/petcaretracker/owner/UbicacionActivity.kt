@@ -1,4 +1,4 @@
-package com.example.petcaretracker
+package com.example.petcaretracker.owner
 
 import android.Manifest
 import android.content.Context
@@ -22,9 +22,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
-import com.example.petcaretracker.owner.HomeActivity
-import com.example.petcaretracker.owner.MascotasActivity
-import com.example.petcaretracker.owner.MedicoActivity
+import com.example.petcaretracker.ConfiguracionActivity
+import com.example.petcaretracker.EditarPerfilActivity
+import com.example.petcaretracker.FirebaseService
+import com.example.petcaretracker.LoginActivity
+import com.example.petcaretracker.R
 import com.google.android.gms.common.api.ResolvableApiException
 
 class UbicacionActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -58,7 +60,10 @@ class UbicacionActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Toolbar y Drawer
         setSupportActionBar(toolbar)
-        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer)
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar,
+            R.string.open_drawer,
+            R.string.close_drawer
+        )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 

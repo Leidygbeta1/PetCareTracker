@@ -19,7 +19,7 @@ import com.example.petcaretracker.FirebaseService
 import com.example.petcaretracker.FuncionesAdapter
 import com.example.petcaretracker.LoginActivity
 import com.example.petcaretracker.R
-import com.example.petcaretracker.UbicacionActivity
+import com.example.petcaretracker.UbicacionVeterinarioActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -100,7 +100,7 @@ class HomeVeterinarioActivity : AppCompatActivity() {
                     finish()
                 }
                 R.id.nav_ubicacion -> {
-                    startActivity(Intent(this, UbicacionActivity::class.java))
+                    startActivity(Intent(this, UbicacionVeterinarioActivity::class.java))
                     finish()
                 }
                 R.id.nav_mascota -> {

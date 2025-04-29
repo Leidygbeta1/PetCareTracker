@@ -7,9 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.petcaretracker.cuidador.BitacoraCuidadorActivity
+import com.example.petcaretracker.cuidador.HistorialServiciosCuidadorActivity
+import com.example.petcaretracker.cuidador.MensajesCuidadorActivity
+import com.example.petcaretracker.cuidador.PaseosCuidadorActivity
 import com.example.petcaretracker.owner.AlimentacionActivity
 import com.example.petcaretracker.owner.CarnetVacunacionActivity
 import com.example.petcaretracker.owner.HistorialMedicoActivity
+import com.example.petcaretracker.owner.MensajesActivity
 import com.example.petcaretracker.owner.RecordatorioVacunasActivity
 import com.example.petcaretracker.owner.RegistroMedicoActivity
 import com.example.petcaretracker.veterinario.EstadisticasVeterinarioActivity
@@ -45,6 +50,8 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
             "Registro Médico" -> R.drawable.ic_registro_medico
             "Carnet de Vacunacion" -> R.drawable.ic_carnet_vacunacion
 
+            "Mensajes"           -> R.drawable.ic_mensajes
+
             // Nuevas funciones veterinario
             "Estadísticas de Atenciones" -> R.drawable.ic_estadisticas
             "Mensajes de Propietarios" -> R.drawable.ic_mensajes
@@ -56,6 +63,14 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
             "Registrar Atención Médica" -> R.drawable.ic_registro_medico2
             "Ver Agenda de Citas" -> R.drawable.ic_agenda
             "Actualizar Carnet de Vacunación" -> R.drawable.ic_carnet_vacunacion
+
+
+            //Funciones cuidador
+            "Mensajes de dueños"           -> R.drawable.ic_mensajes
+            "Paseos Programados"                 -> R.drawable.ic_paseos
+            "Compartir Ubicación en Tiempo Real" -> R.drawable.ic_share_location
+            "Historial de Servicios"             -> R.drawable.ic_historial_servicios
+
 
             else -> R.drawable.ic_food
         }
@@ -70,6 +85,7 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
                 "Recordatorio Vacunas" -> Intent(contexto, RecordatorioVacunasActivity::class.java)
                 "Carnet de Vacunacion" -> Intent(contexto, CarnetVacunacionActivity::class.java)
                 "Alimentación Proporcional a la mascota" -> Intent(contexto, AlimentacionActivity::class.java)
+                "Mensajes" -> Intent(contexto, MensajesActivity::class.java)
 
                 // Nuevas funciones veterinario
                 "Estadísticas de Atenciones" -> Intent(contexto, EstadisticasVeterinarioActivity::class.java)
@@ -82,6 +98,14 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
                 "Registrar Atención Médica" -> Intent(contexto, RegistrarAtencionActivity::class.java)
                 "Ver Agenda de Citas" -> Intent(contexto, AgendaCitasActivity::class.java)
                 "Actualizar Carnet de Vacunación" -> Intent(contexto, ActualizarCarnetActivity::class.java)
+
+                //Funciones cuidador
+                "Mensajes de dueños" -> Intent(contexto, MensajesCuidadorActivity::class.java)
+                "Paseos Programados"       -> Intent(contexto, PaseosCuidadorActivity::class.java)
+                "Bitácora de Actividades"  -> Intent(contexto, BitacoraCuidadorActivity::class.java)
+
+                "Historial de Servicios"   -> Intent(contexto, HistorialServiciosCuidadorActivity::class.java)
+
 
                 else -> null
             }

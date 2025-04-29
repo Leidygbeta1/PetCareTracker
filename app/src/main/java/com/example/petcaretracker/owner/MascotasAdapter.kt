@@ -14,37 +14,49 @@ import com.example.petcaretracker.R
 class MascotasAdapter(
     private val mascotasList: List<Mascota>,
     private val context: Context,
-    private val onItemClick: (String) -> Unit
+    private val onItemClick: (Mascota) -> Unit
 ) : RecyclerView.Adapter<MascotasAdapter.MascotaViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MascotaViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_mascota, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_mascota, parent, false)
         return MascotaViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: MascotaViewHolder, position: Int) {
         val mascota = mascotasList[position]
         holder.nombre.text = mascota.nombre
-        holder.raza.text = mascota.raza
-        holder.tipo.text = mascota.tipo  // Mostrar el tipo de mascota
+        holder.raza.text   = mascota.raza
+        holder.tipo.text   = mascota.tipo
 
+        // Mostrar foto
         if (mascota.fotoUrl.isNotEmpty()) {
-            Glide.with(context).load(mascota.fotoUrl).into(holder.foto)
+            Glide.with(context)
+                .load(mascota.fotoUrl)
+                .into(holder.foto)
         }
 
-        holder.itemView.setOnClickListener { onItemClick(mascota.id) }
+        // Mostrar cuidador si existe
+        if (!mascota.cuidadorNombre.isNullOrEmpty()) {
+            holder.cuidador.text = "Cuidador: ${mascota.cuidadorNombre}"
+            holder.cuidador.visibility = View.VISIBLE
+        } else {
+            holder.cuidador.visibility = View.GONE
+        }
+
+        holder.itemView.setOnClickListener {
+            onItemClick(mascota)
+        }
     }
+
     override fun getItemCount(): Int = mascotasList.size
 
-    // Agregar el nuevo campo en ViewHolder
     class MascotaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nombre: TextView = itemView.findViewById(R.id.textNombreMascota)
-        val raza: TextView = itemView.findViewById(R.id.textRazaMascota)
-        val tipo: TextView = itemView.findViewById(R.id.textTipoMascota)  // Nuevo campo
-        val foto: ImageView = itemView.findViewById(R.id.imageMascota)
+        val nombre: TextView      = itemView.findViewById(R.id.textNombreMascota)
+        val raza: TextView        = itemView.findViewById(R.id.textRazaMascota)
+        val tipo: TextView        = itemView.findViewById(R.id.textTipoMascota)
+        val foto: ImageView       = itemView.findViewById(R.id.imageMascota)
+        val cuidador: TextView    = itemView.findViewById(R.id.textCuidador)
     }
-
-
-
-
 }
+

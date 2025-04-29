@@ -2,11 +2,18 @@ package com.example.petcaretracker
 
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import com.example.petcaretracker.cuidador.MascotaCuidador
+
 import com.example.petcaretracker.veterinario.MascotaVeterinario
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -493,8 +500,294 @@ object FirebaseService {
     }
 
 
+    // 2) Obtener todos los cuidadores registrados
+    fun obtenerCuidadoresDisponibles(
+        callback: (List<Map<String, String>>?) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("usuarios")
+            .whereEqualTo("rol", "Cuidador")
+            .get()
+            .addOnSuccessListener { snaps ->
+                val cuidadores = snaps.map { doc ->
+                    mapOf(
+                        "id"               to doc.id,
+                        "nombre_completo"  to (doc.getString("nombre_completo") ?: "Sin Nombre")
+                    )
+                }
+                callback(cuidadores)
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+    fun obtenerMascotasAsignadasAlCuidador(
+        cuidadorId: String,
+        callback: (List<MascotaCuidador>) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val resultado = mutableListOf<MascotaCuidador>()
+
+        db.collection("usuarios")
+            .get()
+            .addOnSuccessListener { usuariosSnap ->
+                val usuarios = usuariosSnap.documents
+                if (usuarios.isEmpty()) {
+                    callback(emptyList())
+                    return@addOnSuccessListener
+                }
+
+                var usuariosProcesados = 0
+                for (usuarioDoc in usuarios) {
+                    val ownerId = usuarioDoc.id
+                    val nombreDueno = usuarioDoc.getString("nombre_completo") ?: "Sin Nombre"
+
+                    db.collection("usuarios")
+                        .document(ownerId)
+                        .collection("mascotas")
+                        .get()
+                        .addOnSuccessListener { mascotasSnap ->
+                            val mascotas = mascotasSnap.documents
+                            if (mascotas.isEmpty()) {
+                                usuariosProcesados++
+                                if (usuariosProcesados == usuarios.size) callback(resultado)
+                                return@addOnSuccessListener
+                            }
+
+                            var mascotasProcesadas = 0
+                            for (mascotaDoc in mascotas) {
+                                // Solo añadimos si su campo cuidador_id coincide
+                                val assigned = mascotaDoc.getString("cuidador_id")
+                                if (assigned == cuidadorId) {
+                                    val nombreM = mascotaDoc.getString("nombre_mascota") ?: "Sin Nombre"
+                                    val raza    = mascotaDoc.getString("raza")            ?: "Sin Raza"
+                                    val tipo    = mascotaDoc.getString("tipo")            ?: "Sin Tipo"
+                                    val foto    = mascotaDoc.getString("foto")            ?: ""
+
+                                    resultado.add(
+                                        MascotaCuidador(
+                                            nombre      = nombreM,
+                                            raza        = raza,
+                                            tipo        = tipo,
+                                            foto        = foto,
+                                            nombreDueno = nombreDueno
+                                        )
+                                    )
+                                }
+                                mascotasProcesadas++
+                                if (mascotasProcesadas == mascotas.size) {
+                                    usuariosProcesados++
+                                    if (usuariosProcesados == usuarios.size) {
+                                        callback(resultado)
+                                    }
+                                }
+                            }
+                        }
+                        .addOnFailureListener {
+                            usuariosProcesados++
+                            if (usuariosProcesados == usuarios.size) callback(resultado)
+                        }
+                }
+            }
+            .addOnFailureListener {
+                callback(emptyList())
+            }
+    }
+    fun getChatsForUser(userId: String, callback: (List<Chat>) -> Unit) {
+        db.collection("chats")
+            .whereArrayContains("participants", userId)
+
+            .get()
+            .addOnSuccessListener { snaps ->
+                val chats = snaps.documents.map { doc ->
+                    Chat(
+                        id          = doc.id,
+                        participants= doc.get("participants") as List<String>,
+                        petId       = doc.getString("petId"),
+                        lastMessage = doc.getString("lastMessage") ?: "",
+                        timestamp   = doc.getTimestamp("timestamp")?.toDate()
+                    )
+                }
+                callback(chats)
+            }
+            .addOnFailureListener { ex ->
+                Log.e("FirebaseService", "Error fetching chats", ex)
+                callback(emptyList())
+            }
+    }
+
+    /** 2) Encuentra o crea un chat entre dos usuarios */
+    fun getOrCreateChat(
+        currentUserId: String,
+        otherUserId: String,
+        petId: String?,
+        callback: (String) -> Unit
+    ) {
+        val pair = listOf(currentUserId, otherUserId).sorted()
+        val chatsRef = db.collection("chats")
+        chatsRef
+            .whereEqualTo("participants", pair)
+            .get()
+            .addOnSuccessListener { snap ->
+                if (snap.isEmpty) {
+                    // Creamos uno nuevo
+                    val data = mapOf(
+                        "participants" to pair,
+                        "petId"        to petId,
+                        "lastMessage"  to "",
+                        "timestamp"    to FieldValue.serverTimestamp()
+                    )
+                    chatsRef.add(data)
+                        .addOnSuccessListener { doc ->
+                            // <-- Aquí esperamos medio segundo antes de devolver el id
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                callback(doc.id)
+                            }, 500)
+                        }
+                } else {
+                    // Ya existe, devolvemos directamente
+                    callback(snap.documents.first().id)
+                }
+            }
+            .addOnFailureListener {
+                // En caso de error, devolvemos vacío
+                callback("")
+            }
+    }
+
+
+    /** 3) Envía un mensaje y actualiza el último mensaje en el chat */
+    fun sendMessage(
+        chatId: String,
+        senderId: String,
+        senderRole: String,
+        text: String
+    ) {
+        val chatRef = db.collection("chats").document(chatId)
+        val batch   = db.batch()
+        // 3.1) nuevo mensaje
+        val msgDoc = chatRef.collection("messages").document()
+        batch.set(msgDoc, mapOf(
+            "senderId"   to senderId,
+            "senderRole" to senderRole,
+            "text"       to text,
+            "timestamp"  to FieldValue.serverTimestamp()
+        ))
+        // 3.2) actualizar chat
+        batch.update(chatRef, mapOf(
+            "lastMessage" to text,
+            "timestamp"   to FieldValue.serverTimestamp()
+        ))
+        batch.commit()
+    }
+
+    /** 4) Escucha mensajes en tiempo real */
+    fun listenMessages(
+        chatId: String,
+        onUpdate: (List<Message>) -> Unit
+    ): ListenerRegistration {
+        return db.collection("chats")
+            .document(chatId)
+            .collection("messages")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
+            .addSnapshotListener { snaps, _ ->
+                val msgs = snaps?.documents?.map { doc ->
+                    Message(
+                        id         = doc.id,
+                        senderId   = doc.getString("senderId") ?: "",
+                        senderRole = doc.getString("senderRole") ?: "",
+                        text       = doc.getString("text") ?: "",
+                        timestamp  = doc.getTimestamp("timestamp")?.toDate()
+                    )
+                } ?: emptyList()
+                onUpdate(msgs)
+            }
+    }
+
+    // 1) Lista de veterinarios
+    fun getVeterinariosDisponibles(callback: (List<Map<String,String>>) -> Unit) {
+        db.collection("usuarios")
+            .whereEqualTo("rol", "Veterinario")
+            .get()
+            .addOnSuccessListener { snaps ->
+                val list = snaps.map { doc ->
+                    mapOf("id" to doc.id, "nombre_completo" to (doc.getString("nombre_completo") ?: ""))
+                }
+                callback(list)
+            }
+            .addOnFailureListener { callback(emptyList()) }
+    }
+
+    // 2) Lista de cuidadores
+    fun getCuidadoresDisponibles(callback: (List<Map<String,String>>) -> Unit) {
+        db.collection("usuarios")
+            .whereEqualTo("rol", "Cuidador")
+            .get()
+            .addOnSuccessListener { snaps ->
+                val list = snaps.map { doc ->
+                    mapOf("id" to doc.id, "nombre_completo" to (doc.getString("nombre_completo") ?: ""))
+                }
+                callback(list)
+            }
+            .addOnFailureListener { callback(emptyList()) }
+    }
+    fun getOwnersDisponibles(callback: (List<Map<String,String>>) -> Unit) {
+        db.collection("usuarios")
+            .whereEqualTo("rol", "owner")
+            .get()
+            .addOnSuccessListener { snaps ->
+                val list = snaps.map { doc ->
+                    mapOf(
+                        "id"              to doc.id,
+                        "nombre_completo" to (doc.getString("nombre_completo") ?: "")
+                    )
+                }
+                callback(list)
+            }
+            .addOnFailureListener {
+                callback(emptyList())
+            }
+    }
+
+    fun getUsuarioById(
+        userId: String,
+        callback: (User?) -> Unit
+    ) {
+        db.collection("usuarios")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { doc ->
+                if (!doc.exists()) {
+                    callback(null)
+                    return@addOnSuccessListener
+                }
+                // doc.data es un Map<String, Any?>
+                val dataMap = doc.data ?: emptyMap()
+
+                // Nombre (sigue igual)
+                val nombre = dataMap["nombre_completo"] as? String ?: ""
+
+                // Buscamos la entrada cuyo key.trim()=="rol"
+                val rolEntry = dataMap.entries
+                    .firstOrNull { it.key.trim().equals("rol", ignoreCase = true) }
+                val rol = (rolEntry?.value as? String)?.trim() ?: ""
+
+                Log.d("FirebaseService", ">> getUsuarioById($userId): nombre='$nombre', rol='$rol' (clave encontrada='${rolEntry?.key}')")
+
+                callback(User(doc.id, nombre, rol))
+            }
+            .addOnFailureListener { ex ->
+                Log.e("FirebaseService", "Error getUsuarioById($userId)", ex)
+                callback(null)
+            }
+    }
+
 
 }
+
+
+
 
 
 
