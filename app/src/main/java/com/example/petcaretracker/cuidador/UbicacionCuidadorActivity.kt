@@ -1,4 +1,4 @@
-package com.example.petcaretracker.owner
+package com.example.petcaretracker.cuidador
 
 import android.Manifest
 import android.content.Context
@@ -27,9 +27,6 @@ import com.example.petcaretracker.EditarPerfilActivity
 import com.example.petcaretracker.FirebaseService
 import com.example.petcaretracker.LoginActivity
 import com.example.petcaretracker.R
-import com.example.petcaretracker.cuidador.HomeCuidadorActivity
-import com.example.petcaretracker.cuidador.MascotasCuidadorActivity
-import com.example.petcaretracker.cuidador.MedicoCuidadroActivity
 import com.google.android.gms.common.api.ResolvableApiException
 
 class UbicacionCuidadorActivity : AppCompatActivity(), OnMapReadyCallback {

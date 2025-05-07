@@ -1,10 +1,8 @@
 package com.example.petcaretracker.cuidador
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -22,7 +20,6 @@ import com.example.petcaretracker.Mascota
 import com.example.petcaretracker.R
 
 import com.example.petcaretracker.owner.MascotasAdapter
-import com.example.petcaretracker.owner.UbicacionCuidadorActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore

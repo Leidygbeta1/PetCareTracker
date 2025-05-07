@@ -13,6 +13,8 @@ import com.example.petcaretracker.cuidador.MensajesCuidadorActivity
 import com.example.petcaretracker.cuidador.PaseosCuidadorActivity
 import com.example.petcaretracker.owner.AlimentacionActivity
 import com.example.petcaretracker.owner.CarnetVacunacionActivity
+import com.example.petcaretracker.owner.CompartirUbicacionActivity
+import com.example.petcaretracker.cuidador.CompartirUbicacionCuidadorActivity
 import com.example.petcaretracker.owner.HistorialMedicoActivity
 import com.example.petcaretracker.owner.MensajesActivity
 import com.example.petcaretracker.owner.RecordatorioVacunasActivity
@@ -86,6 +88,8 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
                 "Carnet de Vacunacion" -> Intent(contexto, CarnetVacunacionActivity::class.java)
                 "Alimentación Proporcional a la mascota" -> Intent(contexto, AlimentacionActivity::class.java)
                 "Mensajes" -> Intent(contexto, MensajesActivity::class.java)
+                "Compartir ubicación" -> Intent(contexto, CompartirUbicacionActivity::class.java)
+
 
                 // Nuevas funciones veterinario
                 "Estadísticas de Atenciones" -> Intent(contexto, EstadisticasVeterinarioActivity::class.java)
@@ -105,7 +109,7 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
                 "Bitácora de Actividades"  -> Intent(contexto, BitacoraCuidadorActivity::class.java)
 
                 "Historial de Servicios"   -> Intent(contexto, HistorialServiciosCuidadorActivity::class.java)
-
+                "Compartir Ubicación en Tiempo Real" -> Intent(contexto, CompartirUbicacionCuidadorActivity::class.java)
 
                 else -> null
             }

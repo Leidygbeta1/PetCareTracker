@@ -63,6 +63,7 @@
         <activity android:name=".owner.CarnetVacunacionActivity"/>
         <activity android:name=".owner.AgregarVacunaActivity"/>
         <activity android:name=".owner.AlimentacionActivity"/>
+        <activity android:name=".owner.CompartirUbicacionActivity"/>
 
         <!-- 🌐 Compartido -->
         <activity android:name=".owner.UbicacionActivity"/>
@@ -77,10 +78,13 @@
         <activity android:name=".veterinario.MensajesVeterinarioActivity"/>
         <activity android:name=".veterinario.HorariosVeterinarioActivity"/>
         <activity android:name=".veterinario.ReputacionVeterinarioActivity"/>
+        <activity android:name=".veterinario.UbicacionVeterinarioActivity"/>
+
 
         <activity android:name=".cuidador.HomeCuidadorActivity"/>
         <activity android:name=".cuidador.MascotasCuidadorActivity"/>
-
+        <activity android:name=".cuidador.UbicacionCuidadorActivity"/>
+        <activity android:name=".cuidador.CompartirUbicacionCuidadorActivity"/>
 
         <!-- 🐾 Dueño -->
         <activity android:name=".owner.MensajesActivity"/>

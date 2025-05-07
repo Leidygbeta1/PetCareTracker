@@ -14,10 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.petcaretracker.*
-import com.example.petcaretracker.owner.MascotasActivity
-import com.example.petcaretracker.owner.MedicoActivity
-import com.example.petcaretracker.owner.UbicacionActivity
-import com.example.petcaretracker.owner.UbicacionCuidadorActivity
+
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
