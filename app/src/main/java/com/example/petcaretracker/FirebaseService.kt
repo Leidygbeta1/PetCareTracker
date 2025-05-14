@@ -8,6 +8,7 @@ import android.util.Log
 import com.example.petcaretracker.cuidador.MascotaCuidador
 
 import com.example.petcaretracker.veterinario.MascotaVeterinario
+import com.example.petcaretracker.veterinario.RegistroMedico
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FieldValue
@@ -17,6 +18,9 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import java.security.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 object FirebaseService {
 
@@ -60,8 +64,11 @@ object FirebaseService {
                 // Si el usuario es 'Owner', guardar mascotas como subcolección
                 if (rol == "Owner") {
                     datosMascotas.forEach { mascota ->
+                        val datosMascotaConUserId = mascota.toMutableMap()
+                        datosMascotaConUserId["user_id"] = userId // Añadimos el user_id a cada mascota
+
                         db.collection("usuarios").document(userId).collection("mascotas")
-                            .add(mascota)
+                            .add(datosMascotaConUserId)
                             .addOnSuccessListener {
                                 Log.d("FirebaseService", "Mascota guardada correctamente.")
                             }
@@ -78,6 +85,7 @@ object FirebaseService {
                 callback(false, null)
             }
     }
+
 
 
 
@@ -240,7 +248,8 @@ object FirebaseService {
             "nombre_mascota" to nombre,
             "raza" to raza,
             "tipo" to tipo,
-            "foto" to "" // Inicialmente vacío
+            "foto" to "",
+            "user_id" to userId// Inicialmente vacío
         )
 
         if (imageUri != null) {
@@ -411,6 +420,8 @@ object FirebaseService {
                 callback(null)
             }
     }
+
+
 
     fun obtenerMascotasPorVeterinario(
         veterinarioId: String,
@@ -782,6 +793,335 @@ object FirebaseService {
                 callback(null)
             }
     }
+
+
+
+    fun obtenerRegistrosMedicosPorVeterinario(
+        veterinarioId: String,
+        callback: (List<RegistroMedico>) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val resultado = mutableListOf<RegistroMedico>()
+
+        db.collection("usuarios").get().addOnSuccessListener { usuariosSnapshot ->
+            val usuarios = usuariosSnapshot.documents
+            if (usuarios.isEmpty()) {
+                callback(emptyList())
+                return@addOnSuccessListener
+            }
+
+            var usuariosProcesados = 0
+
+            for (usuarioDoc in usuarios) {
+                val userId = usuarioDoc.id
+                val nombreDueno = usuarioDoc.getString("nombre_completo") ?: "Sin Nombre"
+
+                // Obtenemos las mascotas de cada dueño
+                db.collection("usuarios").document(userId).collection("mascotas").get()
+                    .addOnSuccessListener { mascotasSnapshot ->
+                        val mascotas = mascotasSnapshot.documents
+                        if (mascotas.isEmpty()) {
+                            usuariosProcesados++
+                            if (usuariosProcesados == usuarios.size) {
+                                callback(resultado)
+                            }
+                            return@addOnSuccessListener
+                        }
+
+                        var mascotasProcesadas = 0
+
+                        for (mascotaDoc in mascotas) {
+                            val nombreMascota = mascotaDoc.getString("nombre_mascota") ?: "Sin Nombre"
+                            val raza = mascotaDoc.getString("raza") ?: "Sin raza"
+                            val tipo = mascotaDoc.getString("tipo") ?: "Sin tipo"
+                            val foto = mascotaDoc.getString("foto") ?: ""
+
+                            val mascotaId = mascotaDoc.id
+                            db.collection("usuarios").document(userId)
+                                .collection("mascotas").document(mascotaId)
+                                .collection("registros_medicos")
+                                .whereEqualTo("veterinario_id", veterinarioId)
+                                .get()
+                                .addOnSuccessListener { registrosSnapshot ->
+                                    if (!registrosSnapshot.isEmpty) {
+                                        registrosSnapshot.documents.forEach { registroDoc ->
+                                            val descripcion = registroDoc.getString("descripcion") ?: "Sin descripción"
+                                            val fecha = registroDoc.getString("fecha") ?: "Sin fecha"
+                                            val tipoAtencion = registroDoc.getString("tipo_atencion") ?: "Sin tipo de atención"
+
+                                            resultado.add(
+                                                RegistroMedico(
+                                                    nombreMascota = nombreMascota,
+                                                    raza = raza,
+                                                    tipo = tipo,
+                                                    nombreDueno = nombreDueno,
+                                                    descripcion = descripcion,
+                                                    fecha = fecha,
+                                                    tipoAtencion = tipoAtencion
+                                                )
+                                            )
+                                        }
+                                    }
+
+                                    mascotasProcesadas++
+                                    if (mascotasProcesadas == mascotas.size) {
+                                        usuariosProcesados++
+                                        if (usuariosProcesados == usuarios.size) {
+                                            callback(resultado)
+                                        }
+                                    }
+                                }.addOnFailureListener {
+                                    mascotasProcesadas++
+                                    if (mascotasProcesadas == mascotas.size) {
+                                        usuariosProcesados++
+                                        if (usuariosProcesados == usuarios.size) {
+                                            callback(resultado)
+                                        }
+                                    }
+                                }
+                        }
+                    }.addOnFailureListener {
+                        usuariosProcesados++
+                        if (usuariosProcesados == usuarios.size) {
+                            callback(resultado)
+                        }
+                    }
+            }
+        }.addOnFailureListener {
+            callback(emptyList())
+        }
+    }
+
+
+    fun obtenerRegistrosMedicosPorVeterinario(
+        veterinarioId: String,
+        mascotaId: String,
+        callback: (List<Map<String, Any>>?) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val resultado = mutableListOf<Map<String, Any>>()
+
+        db.collection("usuarios")
+            .get()
+            .addOnSuccessListener { usuariosSnapshot ->
+                val usuarios = usuariosSnapshot.documents
+                if (usuarios.isEmpty()) {
+                    callback(emptyList())
+                    return@addOnSuccessListener
+                }
+
+                var usuariosProcesados = 0
+
+                for (usuarioDoc in usuarios) {
+                    val userId = usuarioDoc.id
+
+                    db.collection("usuarios").document(userId)
+                        .collection("mascotas")
+                        .document(mascotaId)
+                        .collection("registros_medicos")
+                        .whereEqualTo("veterinario_id", veterinarioId)
+                        .get()
+                        .addOnSuccessListener { registrosSnapshot ->
+                            if (!registrosSnapshot.isEmpty) {
+                                registrosSnapshot.documents.forEach { registroDoc ->
+                                    val descripcion = registroDoc.getString("descripcion") ?: "Sin descripción"
+                                    val fecha = registroDoc.getTimestamp("fecha_registro") // Utilizamos el timestamp de Firestore
+                                    val tipoAtencion = registroDoc.getString("tipo_atencion") ?: "Sin tipo de atención"
+
+                                    val fechaFormateada = if (fecha != null) {
+                                        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+                                        dateFormat.format(fecha.toDate())
+                                    } else {
+                                        "Fecha no disponible"
+                                    }
+
+                                    // Agregamos el registro médico a la lista
+                                    val registroData = mapOf(
+                                        "descripcion" to descripcion,
+                                        "fecha" to fechaFormateada,
+                                        "tipo_atencion" to tipoAtencion
+                                    )
+                                    resultado.add(registroData)
+                                }
+                            }
+                            usuariosProcesados++
+                            if (usuariosProcesados == usuarios.size) {
+                                callback(resultado)
+                            }
+                        }
+                        .addOnFailureListener {
+                            usuariosProcesados++
+                            if (usuariosProcesados == usuarios.size) {
+                                callback(resultado)
+                            }
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseService", "Error al obtener registros médicos", e)
+                callback(emptyList())
+            }
+    }
+
+
+    fun obtenerMascotasPorVeterinario2(
+        veterinarioId: String,
+        callback: (List<Map<String, Any>>?) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+
+        // Lista para almacenar las mascotas con su id y nombre
+        val resultado = mutableListOf<Map<String, Any>>()
+
+        // Buscamos los documentos de los usuarios
+        db.collection("usuarios").get().addOnSuccessListener { usuariosSnapshot ->
+            val usuarios = usuariosSnapshot.documents
+            if (usuarios.isEmpty()) {
+                callback(emptyList()) // Si no hay usuarios, devolvemos lista vacía
+                return@addOnSuccessListener
+            }
+
+            var usuariosProcesados = 0
+
+            // Iteramos sobre cada usuario
+            for (usuarioDoc in usuarios) {
+                val userId = usuarioDoc.id
+
+                // Obtenemos las mascotas del usuario
+                db.collection("usuarios").document(userId).collection("mascotas").get()
+                    .addOnSuccessListener { mascotasSnapshot ->
+                        val mascotas = mascotasSnapshot.documents
+                        if (mascotas.isEmpty()) {
+                            usuariosProcesados++
+                            if (usuariosProcesados == usuarios.size) {
+                                callback(resultado)
+                            }
+                            return@addOnSuccessListener
+                        }
+
+                        var mascotasProcesadas = 0
+
+                        // Iteramos sobre cada mascota
+                        for (mascotaDoc in mascotas) {
+                            val nombreMascota = mascotaDoc.getString("nombre_mascota") ?: "Sin Nombre"
+                            val raza = mascotaDoc.getString("raza") ?: "Sin raza"
+                            val tipo = mascotaDoc.getString("tipo") ?: "Sin tipo"
+                            val foto = mascotaDoc.getString("foto") ?: ""
+                            val mascotaId = mascotaDoc.id
+
+                            // Ahora buscamos en los registros médicos si este veterinario está relacionado con la mascota
+                            db.collection("usuarios").document(userId)
+                                .collection("mascotas").document(mascotaId)
+                                .collection("registros_medicos")
+                                .whereEqualTo("veterinario_id", veterinarioId)
+                                .get()
+                                .addOnSuccessListener { registrosSnapshot ->
+                                    if (!registrosSnapshot.isEmpty) {
+                                        // Si encontramos registros médicos para este veterinario, agregamos la mascota
+                                        resultado.add(
+                                            mapOf(
+                                                "id" to mascotaId,
+                                                "nombre_mascota" to nombreMascota,
+                                                "raza" to raza,
+                                                "tipo" to tipo,
+                                                "foto" to foto,
+                                                "user_id" to userId
+                                            )
+                                        )
+                                    }
+
+                                    mascotasProcesadas++
+                                    if (mascotasProcesadas == mascotas.size) {
+                                        usuariosProcesados++
+                                        if (usuariosProcesados == usuarios.size) {
+                                            callback(resultado)
+                                        }
+                                    }
+                                }
+                                .addOnFailureListener {
+                                    mascotasProcesadas++
+                                    if (mascotasProcesadas == mascotas.size) {
+                                        usuariosProcesados++
+                                        if (usuariosProcesados == usuarios.size) {
+                                            callback(resultado)
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                    .addOnFailureListener {
+                        usuariosProcesados++
+                        if (usuariosProcesados == usuarios.size) {
+                            callback(resultado)
+                        }
+                    }
+            }
+        }.addOnFailureListener {
+            callback(emptyList())  // Si hay un error al obtener los usuarios, devolvemos lista vacía
+        }
+    }
+
+
+    fun guardarAtencionMedica(
+        dueñoId: String, // <-- ahora pasarás este parámetro claramente
+        mascotaId: String,
+        tipoAtencion: String,
+        detalles: String,
+        veterinarioId: String,
+        veterinarioNombre: String,
+        clinica: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+
+        val registroData = mapOf(
+            "mascota_id" to mascotaId,
+            "tipo_atencion" to tipoAtencion,
+            "detalles" to detalles,
+            "veterinario_id" to veterinarioId,
+            "veterinario_nombre" to veterinarioNombre,
+            "clinica" to clinica,
+            "fecha_registro" to com.google.firebase.Timestamp.now()
+        )
+
+        db.collection("usuarios").document(dueñoId)
+            .collection("mascotas").document(mascotaId)
+            .collection("registros_medicos")
+            .add(registroData)
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseService", "Error al guardar atención médica", e)
+                callback(false)
+            }
+    }
+
+
+
+
+
+    fun obtenerVeterinarioYClinica(veterinarioId: String, callback: (Map<String, Any>?) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("usuarios").document(veterinarioId).get()
+            .addOnSuccessListener { documentSnapshot ->
+                val data = documentSnapshot.data
+                if (data != null) {
+                    val veterinarioNombre = data["nombre_completo"] as String
+                    val clinica = data["clinica"] as String
+
+                    callback(mapOf("veterinario_nombre" to veterinarioNombre, "clinica" to clinica))
+                } else {
+                    callback(null)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseService", "Error al obtener datos del veterinario", e)
+                callback(null)
+            }
+    }
+
 
 
 }

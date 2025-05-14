@@ -79,7 +79,10 @@
         <activity android:name=".veterinario.HorariosVeterinarioActivity"/>
         <activity android:name=".veterinario.ReputacionVeterinarioActivity"/>
         <activity android:name=".veterinario.UbicacionVeterinarioActivity"/>
-
+        <activity android:name=".veterinario.ConsultarHistorialActivity"/>
+        <activity android:name=".veterinario.RegistrarAtencionActivity"/>
+        <activity android:name=".veterinario.ActualizarCarnetActivity"/>
+        <activity android:name=".veterinario.AgregarVacunaActivity2"/>
 
         <activity android:name=".cuidador.HomeCuidadorActivity"/>
         <activity android:name=".cuidador.MascotasCuidadorActivity"/>

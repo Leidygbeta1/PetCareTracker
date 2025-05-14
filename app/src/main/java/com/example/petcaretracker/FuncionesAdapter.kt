@@ -15,6 +15,7 @@ import com.example.petcaretracker.owner.AlimentacionActivity
 import com.example.petcaretracker.owner.CarnetVacunacionActivity
 import com.example.petcaretracker.owner.CompartirUbicacionActivity
 import com.example.petcaretracker.cuidador.CompartirUbicacionCuidadorActivity
+
 import com.example.petcaretracker.owner.HistorialMedicoActivity
 import com.example.petcaretracker.owner.MensajesActivity
 import com.example.petcaretracker.owner.RecordatorioVacunasActivity
@@ -55,7 +56,8 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
             "Mensajes"           -> R.drawable.ic_mensajes
 
             // Nuevas funciones veterinario
-            "Estadísticas de Atenciones" -> R.drawable.ic_estadisticas
+            "Compartir ubicacion veterinaria" -> R.drawable.ic_share_location
+
             "Mensajes de Propietarios" -> R.drawable.ic_mensajes
             "Horarios de Atención" -> R.drawable.ic_horario
             "Reputación y Comentarios" -> R.drawable.ic_reputacion
@@ -92,7 +94,7 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
 
 
                 // Nuevas funciones veterinario
-                "Estadísticas de Atenciones" -> Intent(contexto, EstadisticasVeterinarioActivity::class.java)
+                "Compartir ubicacion veterinaria" -> Intent(contexto, EstadisticasVeterinarioActivity::class.java)
                 "Mensajes de Propietarios" -> Intent(contexto, MensajesVeterinarioActivity::class.java)
                 "Horarios de Atención" -> Intent(contexto, HorariosVeterinarioActivity::class.java)
                 "Reputación y Comentarios" -> Intent(contexto, ReputacionVeterinarioActivity::class.java)

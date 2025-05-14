@@ -126,7 +126,7 @@ class HomeVeterinarioActivity : AppCompatActivity() {
 
     private fun getFuncionesVeterinario(): List<String> {
         return listOf(
-            "Estadísticas de Atenciones",
+            "Compartir ubicacion veterinaria",
             "Mensajes de Propietarios",
             "Horarios de Atención",
             "Reputación y Comentarios"
