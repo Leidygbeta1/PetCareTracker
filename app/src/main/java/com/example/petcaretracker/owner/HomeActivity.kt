@@ -141,7 +141,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun getFunciones(): List<String> {
-        return listOf("Trackeo de Recorridos", "Alimentación Proporcional a la mascota", "Mejores Estéticas y Veterinarias Certificadas", "Compartir ubicación","Mensajes")
+        return listOf("Trackeo de Recorridos", "Alimentación Proporcional a la mascota", "Agendar cita", "Compartir ubicación","Mensajes")
     }
 }
 

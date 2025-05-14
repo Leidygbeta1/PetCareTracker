@@ -15,6 +15,7 @@ import com.example.petcaretracker.owner.AlimentacionActivity
 import com.example.petcaretracker.owner.CarnetVacunacionActivity
 import com.example.petcaretracker.owner.CompartirUbicacionActivity
 import com.example.petcaretracker.cuidador.CompartirUbicacionCuidadorActivity
+import com.example.petcaretracker.owner.AgendarCitaActivity
 
 import com.example.petcaretracker.owner.HistorialMedicoActivity
 import com.example.petcaretracker.owner.MensajesActivity
@@ -46,7 +47,7 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
         val imagenRes = when (funcion) {
             "Trackeo de Recorridos" -> R.drawable.ic_location
             "Alimentación Proporcional a la mascota" -> R.drawable.ic_food
-            "Mejores Estéticas y Veterinarias Certificadas" -> R.drawable.ic_veterinaria
+            "Agendar cita" -> R.drawable.ic_veterinaria
             "Compartir ubicación" -> R.drawable.ic_share_location
             "Historial Médico" -> R.drawable.ic_historial
             "Recordatorio Vacunas" -> R.drawable.ic_vacunas
@@ -91,6 +92,7 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
                 "Alimentación Proporcional a la mascota" -> Intent(contexto, AlimentacionActivity::class.java)
                 "Mensajes" -> Intent(contexto, MensajesActivity::class.java)
                 "Compartir ubicación" -> Intent(contexto, CompartirUbicacionActivity::class.java)
+                "Agendar cita" -> Intent(contexto, AgendarCitaActivity::class.java)
 
 
                 // Nuevas funciones veterinario

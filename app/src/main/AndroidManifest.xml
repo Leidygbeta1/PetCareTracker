@@ -64,6 +64,7 @@
         <activity android:name=".owner.AgregarVacunaActivity"/>
         <activity android:name=".owner.AlimentacionActivity"/>
         <activity android:name=".owner.CompartirUbicacionActivity"/>
+        <activity android:name=".owner.AgendarCitaActivity"/>
 
         <!-- 🌐 Compartido -->
         <activity android:name=".owner.UbicacionActivity"/>
@@ -83,6 +84,7 @@
         <activity android:name=".veterinario.RegistrarAtencionActivity"/>
         <activity android:name=".veterinario.ActualizarCarnetActivity"/>
         <activity android:name=".veterinario.AgregarVacunaActivity2"/>
+        <activity android:name=".veterinario.AgendaCitasActivity"/>
 
         <activity android:name=".cuidador.HomeCuidadorActivity"/>
         <activity android:name=".cuidador.MascotasCuidadorActivity"/>

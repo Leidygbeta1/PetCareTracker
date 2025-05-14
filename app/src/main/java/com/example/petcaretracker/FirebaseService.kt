@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.example.petcaretracker.cuidador.MascotaCuidador
+import com.example.petcaretracker.model.Cita
 
 import com.example.petcaretracker.veterinario.MascotaVeterinario
 import com.example.petcaretracker.veterinario.RegistroMedico
@@ -1122,6 +1123,101 @@ object FirebaseService {
             }
     }
 
+    fun obtenerVeterinarios(callback: (List<Map<String, Any>>?) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("usuarios").whereEqualTo("rol", "Veterinario").get()
+            .addOnSuccessListener { snapshot ->
+                val resultado = snapshot.map { doc ->
+                    val data = doc.data.toMutableMap()
+                    data["id"] = doc.id
+                    data
+                }
+                callback(resultado)
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+    fun verificarDisponibilidadCita(
+        veterinarioId: String,
+        fecha: String,
+        hora: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("citas")
+            .whereEqualTo("veterinario_id", veterinarioId)
+            .whereEqualTo("fecha", fecha)
+            .whereEqualTo("hora", hora)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                callback(snapshot.isEmpty)
+            }
+            .addOnFailureListener {
+                callback(false)
+            }
+    }
+
+    fun guardarCita(
+        duenioId: String,
+        duenioNombre: String,
+        veterinarioId: String,
+        veterinarioNombre: String,
+        fecha: String,
+        hora: String,
+        motivo: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val data = mapOf(
+            "duenio_id" to duenioId,
+            "duenio_nombre" to duenioNombre,
+            "veterinario_id" to veterinarioId,
+            "veterinario_nombre" to veterinarioNombre,
+            "fecha" to fecha,
+            "hora" to hora,
+            "motivo" to motivo,
+            "estado" to "Pendiente",
+            "timestamp" to com.google.firebase.Timestamp.now()
+        )
+
+        db.collection("citas").add(data)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
+    fun obtenerCitasDelDia(veterinarioId: String, fecha: String, callback: (List<Cita>?) -> Unit) {
+        db.collection("citas")
+            .whereEqualTo("veterinario_id", veterinarioId)
+            .whereEqualTo("fecha", fecha)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val citas = snapshot.documents.map { doc ->
+                    Cita(
+                        id = doc.id,
+                        duenioId = doc.getString("duenio_id") ?: "",
+                        duenioNombre = doc.getString("duenio_nombre") ?: "",
+                        veterinarioId = doc.getString("veterinario_id") ?: "",
+                        veterinarioNombre = doc.getString("veterinario_nombre") ?: "",
+                        fecha = doc.getString("fecha") ?: "",
+                        hora = doc.getString("hora") ?: "",
+                        motivo = doc.getString("motivo") ?: "",
+                        estado = doc.getString("estado") ?: "Pendiente"
+                    )
+                }
+                callback(citas)
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+    fun marcarCitaComoRealizada(citaId: String, callback: (Boolean) -> Unit) {
+        db.collection("citas").document(citaId)
+            .update("estado", "Realizada")
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
 
 
 }
