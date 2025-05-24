@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.petcaretracker.cuidador.HomeCuidadorActivity
+import com.example.petcaretracker.cuidador.MascotasCuidadorActivity
+import com.example.petcaretracker.cuidador.MedicoCuidadorActivity
+import com.example.petcaretracker.cuidador.UbicacionCuidadorActivity
 import com.example.petcaretracker.owner.HomeActivity
 import com.example.petcaretracker.owner.MascotasActivity
 import com.example.petcaretracker.owner.MedicoActivity
@@ -20,6 +23,7 @@ import com.example.petcaretracker.owner.UbicacionActivity
 import com.example.petcaretracker.veterinario.HomeVeterinarioActivity
 import com.example.petcaretracker.veterinario.MascotasVeterinarioActivity
 import com.example.petcaretracker.veterinario.MedicoVeterinarioActivity
+import com.example.petcaretracker.veterinario.UbicacionVeterinarioActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -138,6 +142,8 @@ class EditarPerfilActivity : AppCompatActivity() {
                 R.id.nav_medico -> {
                     if (rol == "Veterinario") {
                         startActivity(Intent(this, MedicoVeterinarioActivity::class.java))
+                    }else if (rol == "Cuidador") {
+                        startActivity(Intent(this, MedicoCuidadorActivity::class.java))
                     } else {
                         startActivity(Intent(this, MedicoActivity::class.java))
                     }
@@ -145,13 +151,21 @@ class EditarPerfilActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_ubicacion -> {
-                    startActivity(Intent(this, UbicacionActivity::class.java))
+                    if (rol == "Veterinario") {
+                        startActivity(Intent(this, UbicacionVeterinarioActivity::class.java))
+                    }else if (rol == "Cuidador") {
+                        startActivity(Intent(this, UbicacionCuidadorActivity::class.java))
+                    } else {
+                        startActivity(Intent(this, UbicacionActivity::class.java))
+                    }
                     finish()
                 }
 
                 R.id.nav_mascota -> {
                     if (rol == "Veterinario") {
                         startActivity(Intent(this, MascotasVeterinarioActivity::class.java))
+                    }else if (rol == "Cuidador") {
+                        startActivity(Intent(this, MascotasCuidadorActivity::class.java))
                     } else {
                         startActivity(Intent(this, MascotasActivity::class.java))
                     }

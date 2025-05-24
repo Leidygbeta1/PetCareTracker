@@ -569,21 +569,21 @@ object FirebaseService {
 
                             var mascotasProcesadas = 0
                             for (mascotaDoc in mascotas) {
-                                // Solo añadimos si su campo cuidador_id coincide
                                 val assigned = mascotaDoc.getString("cuidador_id")
                                 if (assigned == cuidadorId) {
                                     val nombreM = mascotaDoc.getString("nombre_mascota") ?: "Sin Nombre"
-                                    val raza    = mascotaDoc.getString("raza")            ?: "Sin Raza"
-                                    val tipo    = mascotaDoc.getString("tipo")            ?: "Sin Tipo"
-                                    val foto    = mascotaDoc.getString("foto")            ?: ""
+                                    val raza = mascotaDoc.getString("raza") ?: "Sin Raza"
+                                    val tipo = mascotaDoc.getString("tipo") ?: "Sin Tipo"
+                                    val foto = mascotaDoc.getString("foto") ?: ""
 
                                     resultado.add(
                                         MascotaCuidador(
-                                            nombre      = nombreM,
-                                            raza        = raza,
-                                            tipo        = tipo,
-                                            foto        = foto,
-                                            nombreDueno = nombreDueno
+                                            nombre = nombreM,
+                                            raza = raza,
+                                            tipo = tipo,
+                                            foto = foto,
+                                            nombreDueno = nombreDueno,
+                                            duenoId = ownerId // ✅ Aquí se incluye el ID del dueño
                                         )
                                     )
                                 }
@@ -606,6 +606,7 @@ object FirebaseService {
                 callback(emptyList())
             }
     }
+
     fun getChatsForUser(userId: String, callback: (List<Chat>) -> Unit) {
         db.collection("chats")
             .whereArrayContains("participants", userId)
@@ -1146,16 +1147,38 @@ object FirebaseService {
         callback: (Boolean) -> Unit
     ) {
         val db = FirebaseFirestore.getInstance()
+
         db.collection("citas")
             .whereEqualTo("veterinario_id", veterinarioId)
             .whereEqualTo("fecha", fecha)
             .whereEqualTo("hora", hora)
             .get()
-            .addOnSuccessListener { snapshot ->
-                callback(snapshot.isEmpty)
+            .addOnSuccessListener { citasSnapshot ->
+                if (!citasSnapshot.isEmpty) {
+                    callback(false)
+                    return@addOnSuccessListener
+                }
+
+                db.collection("usuarios").document(veterinarioId)
+                    .collection("horarios_no_disponibles")
+                    .whereEqualTo("fecha", fecha)
+                    .get()
+                    .addOnSuccessListener { horariosSnapshot ->
+                        val horaInt = hora.split(":")[0].toInt()
+                        for (doc in horariosSnapshot) {
+                            val inicio = doc.getString("hora_inicio")?.split(":")?.get(0)?.toIntOrNull() ?: continue
+                            val fin = doc.getString("hora_fin")?.split(":")?.get(0)?.toIntOrNull() ?: continue
+                            if (horaInt in inicio..fin) {
+                                callback(false)
+                                return@addOnSuccessListener
+                            }
+                        }
+                        callback(true)
+                    }
+                    .addOnFailureListener { callback(true) }
             }
             .addOnFailureListener {
-                callback(false)
+                callback(true)
             }
     }
 
@@ -1218,6 +1241,375 @@ object FirebaseService {
             .addOnSuccessListener { callback(true) }
             .addOnFailureListener { callback(false) }
     }
+
+    fun guardarRecorrido(userId: String, nombre: String, coordenadas: List<Pair<Double, Double>>, callback: (Boolean) -> Unit) {
+        val data = mapOf(
+            "nombre" to nombre,
+            "latitudes" to coordenadas.map { it.first },
+            "longitudes" to coordenadas.map { it.second },
+            "timestamp" to com.google.firebase.Timestamp.now()
+        )
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(userId)
+            .collection("recorridos")
+            .add(data)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
+
+    fun obtenerRecorridos(userId: String, callback: (List<Map<String, Any>>) -> Unit) {
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(userId)
+            .collection("recorridos")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val listaRecorridos = snapshot.documents.mapNotNull { doc ->
+                    val nombre = doc.getString("nombre")
+                    val lats = doc.get("latitudes") as? List<Double>
+                    val lngs = doc.get("longitudes") as? List<Double>
+                    if (nombre != null && lats != null && lngs != null && lats.size == lngs.size) {
+                        mapOf(
+                            "nombre" to nombre,
+                            "coordenadas" to lats.zip(lngs)
+                        )
+                    } else null
+                }
+                callback(listaRecorridos)
+            }
+            .addOnFailureListener {
+                callback(emptyList())
+            }
+    }
+    fun obtenerRecorridosConNombre(userId: String, callback: (Map<String, List<Pair<Double, Double>>>) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("usuarios").document(userId).collection("recorridos")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val mapa = mutableMapOf<String, List<Pair<Double, Double>>>()
+                for (doc in snapshot) {
+                    val nombre = doc.getString("nombre") ?: continue
+                    val lats = doc.get("latitudes") as? List<Double>
+                    val lngs = doc.get("longitudes") as? List<Double>
+                    if (lats != null && lngs != null && lats.size == lngs.size) {
+                        mapa[nombre] = lats.zip(lngs)
+                    }
+                }
+                callback(mapa)
+            }
+            .addOnFailureListener {
+                callback(emptyMap())
+            }
+    }
+
+
+    fun guardarDireccion(userId: String, nombre: String, direccion: String, lat: Double, lng: Double, callback: (Boolean) -> Unit) {
+        val data = mapOf(
+            "nombre" to nombre,
+            "direccion" to direccion,
+            "latitud" to lat,
+            "longitud" to lng
+        )
+
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(userId)
+            .collection("direcciones")
+            .add(data)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
+
+    fun obtenerDirecciones(userId: String, callback: (List<Map<String, Any>>) -> Unit) {
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(userId)
+            .collection("direcciones")
+            .get()
+            .addOnSuccessListener { result ->
+                val lista = result.map { doc -> doc.data }
+                callback(lista)
+            }
+            .addOnFailureListener { callback(emptyList()) }
+    }
+
+    fun guardarHorarioNoDisponible(
+        veterinarioId: String,
+        fecha: String,
+        horaInicio: String,
+        horaFin: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val data = mapOf(
+            "fecha" to fecha,
+            "hora_inicio" to horaInicio,
+            "hora_fin" to horaFin
+        )
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(veterinarioId)
+            .collection("horarios_no_disponibles")
+            .add(data)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
+    fun obtenerHorariosNoDisponibles(veterinarioId: String, callback: (List<Map<String, Any>>) -> Unit) {
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(veterinarioId)
+            .collection("horarios_no_disponibles")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val lista = snapshot.documents.map { it.data ?: emptyMap() }
+                callback(lista)
+            }
+            .addOnFailureListener {
+                callback(emptyList())
+            }
+    }
+    fun obtenerCitasDelVeterinario(veterinarioId: String, callback: (List<Cita>?) -> Unit) {
+        FirebaseFirestore.getInstance()
+            .collection("citas")
+            .whereEqualTo("veterinario_id", veterinarioId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val citas = snapshot.documents.map { doc ->
+                    Cita(
+                        id = doc.id,
+                        duenioId = doc.getString("duenio_id") ?: "",
+                        duenioNombre = doc.getString("duenio_nombre") ?: "",
+                        veterinarioId = doc.getString("veterinario_id") ?: "",
+                        veterinarioNombre = doc.getString("veterinario_nombre") ?: "",
+                        fecha = doc.getString("fecha") ?: "",
+                        hora = doc.getString("hora") ?: "",
+                        motivo = doc.getString("motivo") ?: "",
+                        estado = doc.getString("estado") ?: "Pendiente"
+                    )
+                }
+                callback(citas)
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+    fun obtenerCitasDelVeterinarioSimple(
+        veterinarioId: String,
+        callback: (List<Map<String, Any>>) -> Unit
+    ) {
+        FirebaseFirestore.getInstance()
+            .collection("citas")
+            .whereEqualTo("veterinario_id", veterinarioId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val citas = snapshot.documents.mapNotNull { doc -> doc.data }
+                callback(citas)
+            }
+            .addOnFailureListener {
+                callback(emptyList())
+            }
+    }
+
+    fun guardarOActualizarControlFisico(
+        userId: String,
+        mascotaId: String,
+        fecha: String,
+        peso: String,
+        talla: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val data = mapOf(
+            "fecha" to fecha,
+            "peso" to peso,
+            "talla" to talla,
+            "timestamp" to com.google.firebase.Timestamp.now()
+        )
+
+        val docRef = db.collection("usuarios")
+            .document(userId)
+            .collection("mascotas")
+            .document(mascotaId)
+            .collection("control_fisico")
+            .document(fecha) // se usa la fecha como ID para sobreescribir si existe
+
+        docRef.set(data)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
+    fun obtenerIdMascotaPorNombre(nombreMascota: String, duenioId: String, callback: (String?) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("usuarios").document(duenioId).collection("mascotas")
+            .whereEqualTo("nombre_mascota", nombreMascota)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val mascotaId = snapshot.documents.firstOrNull()?.id
+                callback(mascotaId)
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+    fun obtenerServiciosMascotaCuidador(
+        cuidadorId: String,
+        nombreMascota: String,
+        nombreDueno: String,
+        callback: (List<Map<String, Any>>) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("usuarios").get().addOnSuccessListener { usuarios ->
+            val dueño = usuarios.firstOrNull { it.getString("nombre_completo") == nombreDueno }
+            if (dueño == null) {
+                callback(emptyList())
+                return@addOnSuccessListener
+            }
+
+            val ownerId = dueño.id
+            db.collection("usuarios")
+                .document(ownerId)
+                .collection("mascotas")
+                .whereEqualTo("nombre_mascota", nombreMascota)
+                .get()
+                .addOnSuccessListener { mascotas ->
+                    val mascota = mascotas.firstOrNull()
+                    if (mascota == null) {
+                        callback(emptyList())
+                        return@addOnSuccessListener
+                    }
+
+                    val mascotaId = mascota.id
+                    db.collection("usuarios")
+                        .document(ownerId)
+                        .collection("mascotas")
+                        .document(mascotaId)
+                        .collection("historial_servicios")
+                        .whereEqualTo("cuidador_id", cuidadorId)
+                        .get()
+                        .addOnSuccessListener { servicios ->
+                            val lista = servicios.documents.mapNotNull { it.data }
+                            callback(lista)
+                        }
+                        .addOnFailureListener { callback(emptyList()) }
+                }
+                .addOnFailureListener { callback(emptyList()) }
+        }.addOnFailureListener {
+            callback(emptyList())
+        }
+    }
+
+    fun registrarServicio(
+        userId: String,
+        mascotaId: String,
+        cuidadorId: String,
+        descripcion: String,
+        fecha: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val servicio = mapOf(
+            "descripcion" to descripcion,
+            "fecha" to fecha,
+            "cuidador_id" to cuidadorId,
+            "timestamp" to com.google.firebase.Timestamp.now()
+        )
+
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(userId)
+            .collection("mascotas").document(mascotaId)
+            .collection("historial_servicios")
+            .add(servicio)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
+    fun guardarServicioCuidador(
+        duenoId: String,
+        mascotaId: String,
+        cuidadorId: String,
+        tipo: String,
+        comentario: String,
+        fecha: String,
+        callback: (Boolean) -> Unit
+    ) {
+        val data = mapOf(
+            "tipo" to tipo,
+            "comentario" to comentario,
+            "fecha" to fecha,
+            "cuidador_id" to cuidadorId,
+            "timestamp" to com.google.firebase.Timestamp.now()
+        )
+
+        FirebaseFirestore.getInstance()
+            .collection("usuarios")
+            .document(duenoId)
+            .collection("mascotas")
+            .document(mascotaId)
+            .collection("historial_servicios")
+            .add(data)
+            .addOnSuccessListener { callback(true) }
+            .addOnFailureListener { callback(false) }
+    }
+    fun obtenerHistorialCuidador(
+        duenoId: String,
+        mascotaId: String,
+        callback: (List<Map<String, Any>>) -> Unit
+    ) {
+        FirebaseFirestore.getInstance()
+            .collection("usuarios")
+            .document(duenoId)
+            .collection("mascotas")
+            .document(mascotaId)
+            .collection("historial_servicios")
+            .get()
+            .addOnSuccessListener { result ->
+                val historial = result.documents.mapNotNull { it.data }
+                callback(historial)
+            }
+            .addOnFailureListener {
+                callback(emptyList())
+            }
+    }
+    /** Guarda un paseo programado */
+    fun guardarPaseoProgramado(
+        duenioId : String,
+        mascotaId: String,
+        nombre   : String,
+        coords   : List<Pair<Double,Double>>,
+        callback : ((Boolean)->Unit)? = null
+    ) {
+        val data = mapOf(
+            "nombre"     to nombre,
+            "latitudes"  to coords.map { it.first },
+            "longitudes" to coords.map { it.second },
+            "timestamp"  to com.google.firebase.Timestamp.now()
+        )
+
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(duenioId)
+            .collection("mascotas").document(mascotaId)
+            .collection("paseos_programados")
+            .add(data)
+            .addOnSuccessListener { callback?.invoke(true) }
+            .addOnFailureListener { callback?.invoke(false) }
+    }
+    /*  Recorridos guardados dentro de una mascota          */
+    /* usuarios/{userId}/mascotas/{mascotaId}/recorridos    */
+
+    fun obtenerRecorridosPorMascota(
+        userId:String,
+        mascotaId:String,
+        callback:(List<Pair<String, List<Pair<Double,Double>>>>)->Unit
+    ){
+        FirebaseFirestore.getInstance()
+            .collection("usuarios").document(userId)
+            .collection("mascotas").document(mascotaId)
+            .collection("paseos_programados")
+            .get()
+            .addOnSuccessListener { snap ->
+                val lista = snap.documents.mapNotNull{ doc ->
+                    val nombre = doc.getString("nombre") ?: return@mapNotNull null
+                    val lats   = doc.get("latitudes")  as? List<Double> ?: return@mapNotNull null
+                    val lngs   = doc.get("longitudes") as? List<Double> ?: return@mapNotNull null
+                    if (lats.size != lngs.size) null else nombre to lats.zip(lngs)
+                }
+                callback(lista)
+            }.addOnFailureListener { callback(emptyList()) }
+    }
+
+
 
 
 }

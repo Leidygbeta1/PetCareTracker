@@ -82,7 +82,7 @@ class HomeCuidadorActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { menu ->
             when (menu.itemId) {
                 R.id.nav_home      -> {} // Ya estamos aquí
-                R.id.nav_medico    -> startActivity(Intent(this, MedicoCuidadroActivity::class.java))
+                R.id.nav_medico    -> startActivity(Intent(this, MedicoCuidadorActivity::class.java))
                 R.id.nav_ubicacion -> startActivity(Intent(this, UbicacionCuidadorActivity::class.java))
                 R.id.nav_mascota   -> startActivity(Intent(this, MascotasCuidadorActivity::class.java))
             }

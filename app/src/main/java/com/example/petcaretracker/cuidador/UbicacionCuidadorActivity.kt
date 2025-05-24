@@ -115,7 +115,7 @@ class UbicacionCuidadorActivity : AppCompatActivity(), OnMapReadyCallback {
                     finish()
                 }
                 R.id.nav_medico -> {
-                    startActivity(Intent(this, MedicoCuidadroActivity::class.java))
+                    startActivity(Intent(this, MedicoCuidadorActivity::class.java))
                     finish()
                 }
                 R.id.nav_ubicacion -> Toast.makeText(this, "Ya estás en Ubicación", Toast.LENGTH_SHORT).show()

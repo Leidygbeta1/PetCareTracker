@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.petcaretracker.cuidador.BitacoraCuidadorActivity
+import com.example.petcaretracker.cuidador.CarnetVacunacionCuidadorActivity
 import com.example.petcaretracker.cuidador.HistorialServiciosCuidadorActivity
 import com.example.petcaretracker.cuidador.MensajesCuidadorActivity
 import com.example.petcaretracker.cuidador.PaseosCuidadorActivity
@@ -15,19 +16,22 @@ import com.example.petcaretracker.owner.AlimentacionActivity
 import com.example.petcaretracker.owner.CarnetVacunacionActivity
 import com.example.petcaretracker.owner.CompartirUbicacionActivity
 import com.example.petcaretracker.cuidador.CompartirUbicacionCuidadorActivity
+import com.example.petcaretracker.cuidador.HistorialServiciosActivity
+import com.example.petcaretracker.cuidador.ProgramarPaseoActivity
 import com.example.petcaretracker.owner.AgendarCitaActivity
 
 import com.example.petcaretracker.owner.HistorialMedicoActivity
 import com.example.petcaretracker.owner.MensajesActivity
 import com.example.petcaretracker.owner.RecordatorioVacunasActivity
 import com.example.petcaretracker.owner.RegistroMedicoActivity
+import com.example.petcaretracker.owner.TrackeoRecorridoActivity
 import com.example.petcaretracker.veterinario.EstadisticasVeterinarioActivity
 import com.example.petcaretracker.veterinario.HorariosVeterinarioActivity
 import com.example.petcaretracker.veterinario.MensajesVeterinarioActivity
-import com.example.petcaretracker.veterinario.ReputacionVeterinarioActivity
 import com.example.petcaretracker.veterinario.ActualizarCarnetActivity
 import com.example.petcaretracker.veterinario.AgendaCitasActivity
 import com.example.petcaretracker.veterinario.ConsultarHistorialActivity
+import com.example.petcaretracker.veterinario.ControlFisicoActivity
 import com.example.petcaretracker.veterinario.RegistrarAtencionActivity
 
 class FuncionesAdapter(private val listaFunciones: List<String>) :
@@ -61,7 +65,7 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
 
             "Mensajes de Propietarios" -> R.drawable.ic_mensajes
             "Horarios de Atención" -> R.drawable.ic_horario
-            "Reputación y Comentarios" -> R.drawable.ic_reputacion
+            "Registrar Control de Peso o Talla" -> R.drawable.ic_control
 
             // Médicas veterinario
             "Consultar Historial Médico" -> R.drawable.ic_historial2
@@ -76,6 +80,8 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
             "Compartir Ubicación en Tiempo Real" -> R.drawable.ic_share_location
             "Historial de Servicios"             -> R.drawable.ic_historial_servicios
 
+
+            "Ver Carnet de Vacunación"-> R.drawable.ic_carnet_vacunacion
 
             else -> R.drawable.ic_food
         }
@@ -93,13 +99,14 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
                 "Mensajes" -> Intent(contexto, MensajesActivity::class.java)
                 "Compartir ubicación" -> Intent(contexto, CompartirUbicacionActivity::class.java)
                 "Agendar cita" -> Intent(contexto, AgendarCitaActivity::class.java)
-
+                "Trackeo de Recorridos"-> Intent(contexto, TrackeoRecorridoActivity::class.java)
 
                 // Nuevas funciones veterinario
                 "Compartir ubicacion veterinaria" -> Intent(contexto, EstadisticasVeterinarioActivity::class.java)
                 "Mensajes de Propietarios" -> Intent(contexto, MensajesVeterinarioActivity::class.java)
                 "Horarios de Atención" -> Intent(contexto, HorariosVeterinarioActivity::class.java)
-                "Reputación y Comentarios" -> Intent(contexto, ReputacionVeterinarioActivity::class.java)
+                "Registrar Control de Peso o Talla"-> Intent(contexto, ControlFisicoActivity::class.java)
+
 
                 // Médicas veterinario
                 "Consultar Historial Médico" -> Intent(contexto, ConsultarHistorialActivity::class.java)
@@ -109,10 +116,11 @@ class FuncionesAdapter(private val listaFunciones: List<String>) :
 
                 //Funciones cuidador
                 "Mensajes de dueños" -> Intent(contexto, MensajesCuidadorActivity::class.java)
-                "Paseos Programados"       -> Intent(contexto, PaseosCuidadorActivity::class.java)
                 "Bitácora de Actividades"  -> Intent(contexto, BitacoraCuidadorActivity::class.java)
+                "Ver Carnet de Vacunación" -> Intent(contexto, CarnetVacunacionCuidadorActivity::class.java)
+                "Paseos Programados" -> Intent(contexto, ProgramarPaseoActivity::class.java)
 
-                "Historial de Servicios"   -> Intent(contexto, HistorialServiciosCuidadorActivity::class.java)
+                    "Historial de Servicios"   -> Intent(contexto, HistorialServiciosActivity::class.java)
                 "Compartir Ubicación en Tiempo Real" -> Intent(contexto, CompartirUbicacionCuidadorActivity::class.java)
 
                 else -> null

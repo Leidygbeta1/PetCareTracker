@@ -106,7 +106,7 @@ class MascotasCuidadorActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home      -> startActivity(Intent(this, HomeCuidadorActivity::class.java))
-                R.id.nav_medico    -> startActivity(Intent(this, MedicoCuidadroActivity::class.java))
+                R.id.nav_medico    -> startActivity(Intent(this, MedicoCuidadorActivity::class.java))
                 R.id.nav_ubicacion -> startActivity(Intent(this, UbicacionCuidadorActivity::class.java))
                 R.id.nav_mascota   ->
                     Toast.makeText(this, "Ya estás aquí", Toast.LENGTH_SHORT).show()

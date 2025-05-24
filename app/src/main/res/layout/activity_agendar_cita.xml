@@ -31,13 +31,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp" />
 
-    <EditText
-        android:id="@+id/edtHora"
-        android:hint="Hora (HH:mm)"
-        android:focusable="false"
+    <Spinner
+        android:id="@+id/spinnerHorasDisponibles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"/>
+
 
     <EditText
         android:id="@+id/edtMotivo"

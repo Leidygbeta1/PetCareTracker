@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <uses-feature android:name="android.hardware.location.gps" android:required="true"/>
 
 
@@ -65,6 +67,11 @@
         <activity android:name=".owner.AlimentacionActivity"/>
         <activity android:name=".owner.CompartirUbicacionActivity"/>
         <activity android:name=".owner.AgendarCitaActivity"/>
+        <activity android:name=".owner.TrackeoRecorridoActivity"/>
+        <activity android:name=".owner.NuevoRecorridoActivity"/>
+        <activity android:name=".owner.MapsRecorridoActivity"/>
+        <activity android:name=".owner.NuevaDireccionActivity"/>
+        <activity android:name=".owner.MapsRecorridoActivity2"/>
 
         <!-- 🌐 Compartido -->
         <activity android:name=".owner.UbicacionActivity"/>
@@ -78,18 +85,24 @@
         <activity android:name=".veterinario.EstadisticasVeterinarioActivity"/>
         <activity android:name=".veterinario.MensajesVeterinarioActivity"/>
         <activity android:name=".veterinario.HorariosVeterinarioActivity"/>
-        <activity android:name=".veterinario.ReputacionVeterinarioActivity"/>
         <activity android:name=".veterinario.UbicacionVeterinarioActivity"/>
         <activity android:name=".veterinario.ConsultarHistorialActivity"/>
         <activity android:name=".veterinario.RegistrarAtencionActivity"/>
         <activity android:name=".veterinario.ActualizarCarnetActivity"/>
         <activity android:name=".veterinario.AgregarVacunaActivity2"/>
         <activity android:name=".veterinario.AgendaCitasActivity"/>
+        <activity android:name=".veterinario.ControlFisicoActivity"/>
+
 
         <activity android:name=".cuidador.HomeCuidadorActivity"/>
         <activity android:name=".cuidador.MascotasCuidadorActivity"/>
         <activity android:name=".cuidador.UbicacionCuidadorActivity"/>
         <activity android:name=".cuidador.CompartirUbicacionCuidadorActivity"/>
+        <activity android:name=".cuidador.CarnetVacunacionCuidadorActivity"/>
+        <activity android:name=".cuidador.MedicoCuidadorActivity"/>
+        <activity android:name=".cuidador.HistorialServiciosActivity"/>
+        <activity android:name=".cuidador.ProgramarPaseoActivity"/>
+        <activity android:name=".cuidador.MapsRecorridoActivity"/>
 
         <!-- 🐾 Dueño -->
         <activity android:name=".owner.MensajesActivity"/>
